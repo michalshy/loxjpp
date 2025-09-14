@@ -1,6 +1,17 @@
 #include <iostream>
+#include "lox.h"
 
-int main()
-{
-    std::cout << "Hello world";
+int main(int argc, char** argv) {
+
+    Lox lox_client = Lox();
+        
+    if(argc > 2) {
+        std::cout << "Usage: loxjpp [script]" << std::endl;
+    } else if (argc == 2) {
+        lox_client.run_file(argv[1]);
+    } else {
+        lox_client.run_prompt();
+    }
+
+    return 0;
 }
