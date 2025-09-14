@@ -3,12 +3,14 @@
 #include <string>
 #include <vector>
 
+
 class Lox
 {
-public:
+    public:
     void run_file(std::string file_name);
     void run_prompt();
-
+    
+    static bool had_error;
 private:
     void run(std::string&);
 };

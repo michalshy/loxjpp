@@ -1,6 +1,7 @@
 #include <iostream>
 #include "lox.h"
 
+
 int main(int argc, char** argv) {
 
     Lox lox_client = Lox();
@@ -13,5 +14,8 @@ int main(int argc, char** argv) {
         lox_client.run_prompt();
     }
 
+    if(Lox::had_error)
+        return 65;
+    
     return 0;
 }
