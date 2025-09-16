@@ -1,15 +1,13 @@
 #include "lox.h"
 #include "scanner.h"
-#include <cstddef>
 #include <fstream>
 #include <ios>
 #include <list>
-#include <vector>
 #include <iostream>
 
-bool Lox::had_error = false;
+bool Lox::s_HadError = false;
 
-void Lox::run_file(std::string file_name)
+void Lox::run_file(const std::string& file_name)
 {
     std::ifstream input_file(file_name, std::ios::in | std::ios::binary);
     if (!input_file) {
@@ -34,16 +32,16 @@ void Lox::run_prompt()
         run(line);
         std::cout << "> ";
 
-        Lox::had_error = false;
+        Lox::s_HadError = false;
     }
 }
 
-void Lox::run(std::string& source)
+void Lox::run(const std::string& source)
 {
     Scanner scanner = Scanner(source);
     std::list<Token> tokens = scanner.scan_tokens();
 
     for (auto& token: tokens) {
-        std::cout << token;
+        std::cout << TokenTypeToString(token.m_Type) << std::endl;
     }
 }

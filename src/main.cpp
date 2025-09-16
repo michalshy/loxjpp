@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
         lox_client.run_prompt();
     }
 
-    if(Lox::had_error)
+    if(Lox::s_HadError)
         return 65;
     
     return 0;
