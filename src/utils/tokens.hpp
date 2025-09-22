@@ -93,7 +93,7 @@ static std::unordered_map<std::string, TokenType> keywords {
 
 struct Object
 {
-    std::variant<std::string, double> literal;
+    std::variant<std::monostate, std::string, double> literal;
 };
 
 struct Token

@@ -1,6 +1,8 @@
 #include <iostream>
+#include <memory>
+#include "expr.h"
 #include "lox.h"
-
+#include "utils/tree_printer.hpp"
 
 int main(int argc, char** argv) {
 
