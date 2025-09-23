@@ -39,7 +39,7 @@ void Lox::run_prompt()
 void Lox::run(const std::string& source)
 {
     Scanner scanner = Scanner(source);
-    std::list<Token> tokens = scanner.scan_tokens();
+    std::vector<Token> tokens = scanner.scan_tokens();
 
     for (auto& token: tokens) {
         std::cout << TokenTypeToString(token.m_Type) << std::endl;

@@ -4,6 +4,7 @@
 #include <ostream>
 #include <unordered_map>
 #include <variant>
+#include <vector>
 
 enum class TokenType {
     // Single - character tokens.
@@ -119,3 +120,5 @@ struct Token
         return os;
     }
 };
+
+using Tokens = std::vector<Token>;

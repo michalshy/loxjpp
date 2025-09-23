@@ -36,6 +36,7 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
     std::ofstream out((dir / file).string());
     out << "#pragma once" << std::endl;
     out << "#include \"utils/tokens.hpp\"" << std::endl;
+    out << "#include <memory>" << std::endl;
     
     out << "template<class T>" << std::endl << "class Visitor;" << std::endl;
 
@@ -107,9 +108,9 @@ int main(int argc, char** argv)
     }
     std::string output = argv[1];
     define_ast(output, "Expr", std::vector<std::string>{
-        "Binary : Expr<T>* left, Token op, Expr<T>* right",
-        "Grouping : Expr<T>* expression",
-        "Literal : T value",
-        "Unary : Token op, Expr<T>* right"
+        "Binary : std::unique_ptr<Expr<T>> left, Token op, std::unique_ptr<Expr<T>> right",
+        "Grouping : std::unique_ptr<Expr<T>> expression",
+        "Literal : Object value",
+        "Unary : Token op, std::unique_ptr<Expr<T>> right"
     });
 }

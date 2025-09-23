@@ -32,15 +32,15 @@ public:
     std::string visitBinaryExpr(Binary<std::string>* expr) override {
         return paranthesize(
             expr->op.m_Lexeme,
-            expr->left,
-            expr->right
+            expr->left.get(),
+            expr->right.get()
         );
     }
     std::string visitGroupingExpr(Grouping<std::string>* expr) override {
-        return paranthesize("group", expr->expression);
+        return paranthesize("group", expr->expression.get());
     }
     std::string visitUnaryExpr(Unary<std::string>* expr) override {
-        return paranthesize(expr->op.m_Lexeme, expr->right);
+        return paranthesize(expr->op.m_Lexeme, expr->right.get());
     }
 
     std::string print(Expr<std::string>& expr)

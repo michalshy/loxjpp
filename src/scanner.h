@@ -2,10 +2,9 @@
 
 #include <cstdio>
 #include "utils/tokens.hpp"
-#include <list>
+#include <vector>
 #include <string>
 
-using Tokens = std::list<Token>;
 class Scanner
 {
 public:
