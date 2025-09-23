@@ -57,6 +57,8 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
         out << "class " << class_name << " : public " << base_name << "<T>" << " {" << std::endl;
         out << "public:" << std::endl;
         
+        std::string constructor = "    " + class_name + "(" + fields_concat + ") :\n       ";
+
         // Split fields_concat by ", "
         std::vector<std::string> fields;
         size_t start = 0;
@@ -71,10 +73,21 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
                 field = field.substr(first);
             }
             fields.push_back(field);
+
+            // extract name of field
+            size_t last_space = field.rfind(' ');
+            if (last_space != std::string::npos) {
+                std::string field_name = field.substr(last_space + 1);
+                constructor += field_name + "(" + field_name + "),";
+            }
         }
+        constructor.pop_back();
+        constructor += "{}";
         for (const auto& field : fields) {
             out << "    " << field << ";" << std::endl;
         }
+
+        out << constructor << std::endl;
 
         out << "    T accept(Visitor<T>* visitor) override {" << std::endl;
         out << "        return visitor->visit" + class_name + base_name + "(this);" << std::endl;
@@ -96,7 +109,7 @@ int main(int argc, char** argv)
     define_ast(output, "Expr", std::vector<std::string>{
         "Binary : Expr<T>* left, Token op, Expr<T>* right",
         "Grouping : Expr<T>* expression",
-        "Literal : Object value",
+        "Literal : T value",
         "Unary : Token op, Expr<T>* right"
     });
 }

@@ -1,11 +1,8 @@
 #include <iostream>
-#include <memory>
-#include "expr.h"
+#include <string>
 #include "lox.h"
-#include "utils/tree_printer.hpp"
 
 int main(int argc, char** argv) {
-
     Lox lox_client = Lox();
         
     if(argc > 2) {

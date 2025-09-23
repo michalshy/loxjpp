@@ -14,6 +14,8 @@ public:
     Expr<T>* left;
     Token op;
     Expr<T>* right;
+    Binary( Expr<T>* left, Token op, Expr<T>* right) :
+       left(left),op(op),right(right){}
     T accept(Visitor<T>* visitor) override {
         return visitor->visitBinaryExpr(this);
     };
@@ -22,6 +24,8 @@ template<class T>
 class Grouping : public Expr<T> {
 public:
     Expr<T>* expression;
+    Grouping( Expr<T>* expression) :
+       expression(expression){}
     T accept(Visitor<T>* visitor) override {
         return visitor->visitGroupingExpr(this);
     };
@@ -30,6 +34,8 @@ template<class T>
 class Literal : public Expr<T> {
 public:
     Object value;
+    Literal( Object value) :
+       value(value){}
     T accept(Visitor<T>* visitor) override {
         return visitor->visitLiteralExpr(this);
     };
@@ -39,6 +45,8 @@ class Unary : public Expr<T> {
 public:
     Token op;
     Expr<T>* right;
+    Unary( Token op, Expr<T>* right) :
+       op(op),right(right){}
     T accept(Visitor<T>* visitor) override {
         return visitor->visitUnaryExpr(this);
     };
