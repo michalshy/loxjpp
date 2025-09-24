@@ -1,5 +1,6 @@
 #include "parser.h"
 #include <memory>
+#include "utils/errors.hpp"
 
 std::shared_ptr<Expr> Parser::parse()
 {

@@ -5,7 +5,6 @@
 #include "utils/tree_printer.hpp"
 #include <fstream>
 #include <ios>
-#include <list>
 #include <iostream>
 #include <memory>
 
@@ -49,6 +48,6 @@ void Lox::run(const std::string& source)
     std::shared_ptr<Expr> expression = parser.parse();
 
     if(s_HadError) return;
-    
+
     TreePrinter().print(*expression);
 }
