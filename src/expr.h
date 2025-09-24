@@ -1,63 +1,59 @@
 #pragma once
 #include "utils/tokens.hpp"
 #include <memory>
-template<class T>
-class Visitor;
-template<class T>
+class Binary;
+class Grouping;
+class Literal;
+class Unary;
+class Visitor
+{
+public:
+    virtual void visitBinaryExpr(Binary* expr) = 0;
+    virtual void visitGroupingExpr(Grouping* expr) = 0;
+    virtual void visitLiteralExpr(Literal* expr) = 0;
+    virtual void visitUnaryExpr(Unary* expr) = 0;
+};
 class Expr{
 public:
     virtual ~Expr() = default;
-    virtual T accept(Visitor<T>* visitor) = 0;
+    virtual void accept(Visitor* visitor) = 0;
 };
-template<class T>
-class Binary : public Expr<T> {
+class Binary : public Expr {
 public:
-    std::unique_ptr<Expr<T>> left;
+    std::shared_ptr<Expr> left;
     Token op;
-    std::unique_ptr<Expr<T>> right;
-    Binary( std::unique_ptr<Expr<T>> left, Token op, std::unique_ptr<Expr<T>> right) :
+    std::shared_ptr<Expr> right;
+    Binary( std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) :
        left(left),op(op),right(right){}
-    T accept(Visitor<T>* visitor) override {
+    void accept(Visitor* visitor) override {
         return visitor->visitBinaryExpr(this);
     };
 };
-template<class T>
-class Grouping : public Expr<T> {
+class Grouping : public Expr {
 public:
-    std::unique_ptr<Expr<T>> expression;
-    Grouping( std::unique_ptr<Expr<T>> expression) :
+    std::shared_ptr<Expr> expression;
+    Grouping( std::shared_ptr<Expr> expression) :
        expression(expression){}
-    T accept(Visitor<T>* visitor) override {
+    void accept(Visitor* visitor) override {
         return visitor->visitGroupingExpr(this);
     };
 };
-template<class T>
-class Literal : public Expr<T> {
+class Literal : public Expr {
 public:
     Object value;
     Literal( Object value) :
        value(value){}
-    T accept(Visitor<T>* visitor) override {
+    void accept(Visitor* visitor) override {
         return visitor->visitLiteralExpr(this);
     };
 };
-template<class T>
-class Unary : public Expr<T> {
+class Unary : public Expr {
 public:
     Token op;
-    std::unique_ptr<Expr<T>> right;
-    Unary( Token op, std::unique_ptr<Expr<T>> right) :
+    std::shared_ptr<Expr> right;
+    Unary( Token op, std::shared_ptr<Expr> right) :
        op(op),right(right){}
-    T accept(Visitor<T>* visitor) override {
+    void accept(Visitor* visitor) override {
         return visitor->visitUnaryExpr(this);
     };
-};
-template<class T>
-class Visitor
-{
-public:
-    virtual T visitBinaryExpr(Binary<T>* expr) = 0;
-    virtual T visitGroupingExpr(Grouping<T>* expr) = 0;
-    virtual T visitLiteralExpr(Literal<T>* expr) = 0;
-    virtual T visitUnaryExpr(Unary<T>* expr) = 0;
 };

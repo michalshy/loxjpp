@@ -3,48 +3,49 @@
 #include "../expr.h"
 #include <string>
 #include <variant>
+#include <iostream>
 
-class TreePrinter : public Visitor<std::string>
+class TreePrinter : public Visitor
 {
     template<typename... Args>
-    std::string paranthesize(const std::string& name, Args*... args)
+    void paranthesize(const std::string& name, Args*... args)
     {
-        std::string result;
-        result += "(" + name;
+        std::cout <<  "(" << name;
         for (auto arg : {args...}) {
-            result += " " + arg->accept(this);
+            std::cout << " ";
+            arg->accept(this);
         }
-        result += ")";
-        return result;
+        std::cout << ")";
     }
 
 public:
-    std::string visitLiteralExpr(Literal<std::string>* expr) override {
+    void visitLiteralExpr(Literal* expr) override {
         if(std::holds_alternative<std::monostate>(expr->value.literal))
         {
-            return "nil";
+            std::cout << "nil";
         } else if (std::holds_alternative<double>(expr->value.literal)) {
-            return std::to_string(std::get<double>(expr->value.literal));
+            std::cout << std::to_string(std::get<double>(expr->value.literal));
         } else {
-            return std::get<std::string>(expr->value.literal);
+            std::cout << std::get<std::string>(expr->value.literal);
         }
     }
-    std::string visitBinaryExpr(Binary<std::string>* expr) override {
-        return paranthesize(
+    void visitBinaryExpr(Binary* expr) override {
+        paranthesize(
             expr->op.m_Lexeme,
             expr->left.get(),
             expr->right.get()
         );
     }
-    std::string visitGroupingExpr(Grouping<std::string>* expr) override {
-        return paranthesize("group", expr->expression.get());
+    void visitGroupingExpr(Grouping* expr) override {
+        paranthesize("group", expr->expression.get());
     }
-    std::string visitUnaryExpr(Unary<std::string>* expr) override {
-        return paranthesize(expr->op.m_Lexeme, expr->right.get());
+    void visitUnaryExpr(Unary* expr) override {
+        paranthesize(expr->op.m_Lexeme, expr->right.get());
     }
 
-    std::string print(Expr<std::string>& expr)
+    void print(Expr& expr)
     {
-        return expr.accept(this);
+        expr.accept(this);
+        std::cout<<std::endl;
     }
 };

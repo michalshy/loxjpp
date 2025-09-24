@@ -89,13 +89,13 @@ char Scanner::advance()
 
 void Scanner::add_token(TokenType type)
 {
-    std::string text = m_Source.substr(m_Start, m_Current);
+    std::string text = m_Source.substr(m_Start, m_Current - m_Start);
     m_Tokens.push_back(Token(type, text, m_Line));
 }
 
 void Scanner::add_token(TokenType type, Object literal)
 {
-    std::string text = m_Source.substr(m_Start, m_Current);
+    std::string text = m_Source.substr(m_Start, m_Current - m_Start);
     m_Tokens.push_back(Token(type, text, m_Line, literal));
 }
 
@@ -130,7 +130,7 @@ void Scanner::string()
 
     advance(); // Closing "
 
-    std::string value = m_Source.substr(m_Start + 1, m_Current - 1);
+    std::string value = m_Source.substr(m_Start + 1, m_Current - m_Start - 1);
     add_token(TokenType::STRING, Object{value});
 }
 
@@ -150,7 +150,7 @@ void Scanner::number()
         while(is_digit(peek())) advance();
     }
 
-    add_token(TokenType::NUMBER, Object{std::stod(m_Source.substr(m_Start, m_Current))});
+    add_token(TokenType::NUMBER, Object{std::stod(m_Source.substr(m_Start, m_Current - m_Start))});
 }
 
 char Scanner::peek_next()
