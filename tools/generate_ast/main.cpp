@@ -7,6 +7,7 @@
 
 void define_visitor(std::ofstream& stream, std::string base_name, std::vector<std::string> types)
 {
+    stream << "template<class T>" << std::endl;
     stream << "class Visitor" << std::endl << "{" << std::endl;
     std::string base_name_lower = base_name;
     std::transform(base_name_lower.begin(), base_name_lower.end(), base_name_lower.begin(),
@@ -17,7 +18,7 @@ void define_visitor(std::ofstream& stream, std::string base_name, std::vector<st
     {
         size_t colon = type.find(':');
         std::string class_name = type.substr(0, colon-1);
-        stream << "    virtual void visit" + class_name + base_name + "(" + class_name + "* " + base_name_lower + ") = 0;" << std::endl; 
+        stream << "    virtual T visit" + class_name + base_name + "(" + class_name + "<T>* " + base_name_lower + ") = 0;" << std::endl; 
     } 
     stream << "};" << std::endl;
 }
@@ -43,14 +44,16 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
     {
         size_t colon = type.find(':');
         std::string class_name = type.substr(0, colon-1);
+        out << "template<class T>" << std::endl;
         out << "class " << class_name << ";" << std::endl;
     }
     define_visitor(out, base_name, types);
 
+    out << "template<class T>" << std::endl;
     out << "class " << base_name << "{" << std::endl;
     out << "public:" << std::endl;
     out << "    virtual ~" << base_name << "() = default;" << std::endl;
-    out << "    virtual void accept(Visitor* visitor) = 0;" << std::endl;
+    out << "    virtual void accept(Visitor<T>* visitor) = 0;" << std::endl;
     out << "};" << std::endl;
 
 
@@ -59,8 +62,8 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
         size_t colon = type.find(':');
         std::string class_name = type.substr(0, colon-1);
         std::string fields_concat = type.substr(colon + 1);
-        
-        out << "class " << class_name << " : public " << base_name << " {" << std::endl;
+        out << "template<class T>" << std::endl;
+        out << "class " << class_name << " : public " << base_name << "<T>, std::enable_shared_from_this<T> {" << std::endl;
         out << "public:" << std::endl;
         
         std::string constructor = "    " + class_name + "(" + fields_concat + ") :\n       ";
@@ -95,8 +98,8 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
 
         out << constructor << std::endl;
 
-        out << "    void accept(Visitor* visitor) override {" << std::endl;
-        out << "        return visitor->visit" + class_name + base_name + "(std::dynamic_pointer_cast<Binary>(shared_from_this()));" << std::endl;
+        out << "    void accept(Visitor<T>* visitor) override {" << std::endl;
+        out << "        return visitor->visit" + class_name + base_name + "(std::dynamic_pointer_cast<" + class_name + "<T>>(this));" << std::endl;
         out << "    };" << std::endl;
 
         out << "};" << std::endl;
@@ -112,9 +115,9 @@ int main(int argc, char** argv)
     }
     std::string output = argv[1];
     define_ast(output, "Expr", std::vector<std::string>{
-        "Binary : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
-        "Grouping : std::shared_ptr<Expr> expression",
+        "Binary : std::shared_ptr<Expr<T>> left, Token op, std::shared_ptr<Expr<T>> right",
+        "Grouping : std::shared_ptr<Expr<T>> expression",
         "Literal : Object value",
-        "Unary : Token op, std::shared_ptr<Expr> right"
+        "Unary : Token op, std::shared_ptr<Expr<T>> right"
     });
 }

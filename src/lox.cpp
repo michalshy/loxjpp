@@ -44,8 +44,8 @@ void Lox::run(const std::string& source)
     Scanner scanner = Scanner(source);
     std::vector<Token> tokens = scanner.scan_tokens();
 
-    Parser parser = Parser(tokens);
-    std::shared_ptr<Expr> expression = parser.parse();
+    Parser parser = Parser<void>(tokens);
+    std::shared_ptr<Expr<void>> expression = parser.parse();
 
     if(s_HadError) return;
 

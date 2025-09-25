@@ -1,59 +1,69 @@
 #pragma once
 #include "utils/tokens.hpp"
 #include <memory>
+template<class T>
 class Binary;
+template<class T>
 class Grouping;
+template<class T>
 class Literal;
+template<class T>
 class Unary;
+template<class T>
 class Visitor
 {
 public:
-    virtual void visitBinaryExpr(Binary* expr) = 0;
-    virtual void visitGroupingExpr(Grouping* expr) = 0;
-    virtual void visitLiteralExpr(Literal* expr) = 0;
-    virtual void visitUnaryExpr(Unary* expr) = 0;
+    virtual T visitBinaryExpr(Binary<T>* expr) = 0;
+    virtual T visitGroupingExpr(Grouping<T>* expr) = 0;
+    virtual T visitLiteralExpr(Literal<T>* expr) = 0;
+    virtual T visitUnaryExpr(Unary<T>* expr) = 0;
 };
+template<class T>
 class Expr{
 public:
     virtual ~Expr() = default;
-    virtual void accept(Visitor* visitor) = 0;
+    virtual void accept(Visitor<T>* visitor) = 0;
 };
-class Binary : public Expr {
+template<class T>
+class Binary : public Expr<T>, std::enable_shared_from_this<T> {
 public:
-    std::shared_ptr<Expr> left;
+    std::shared_ptr<Expr<T>> left;
     Token op;
-    std::shared_ptr<Expr> right;
-    Binary( std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) :
+    std::shared_ptr<Expr<T>> right;
+    Binary( std::shared_ptr<Expr<T>> left, Token op, std::shared_ptr<Expr<T>> right) :
        left(left),op(op),right(right){}
-    void accept(Visitor* visitor) override {
+    void accept(Visitor<T>* visitor) override {
         return visitor->visitBinaryExpr(this);
     };
 };
-class Grouping : public Expr {
+template<class T>
+class Grouping : public Expr<T>, std::enable_shared_from_this<T> {
 public:
-    std::shared_ptr<Expr> expression;
-    Grouping( std::shared_ptr<Expr> expression) :
+    std::shared_ptr<Expr<T>> expression;
+    Grouping( std::shared_ptr<Expr<T>> expression) :
        expression(expression){}
-    void accept(Visitor* visitor) override {
+    void accept(Visitor<T>* visitor) override {
         return visitor->visitGroupingExpr(this);
     };
 };
-class Literal : public Expr {
+template<class T>
+class Literal : public Expr<T>, std::enable_shared_from_this<T> {
 public:
     Object value;
     Literal( Object value) :
        value(value){}
-    void accept(Visitor* visitor) override {
+    void accept(Visitor<T>* visitor) override {
         return visitor->visitLiteralExpr(this);
     };
 };
-class Unary : public Expr {
+template<class T>
+class Unary : public Expr<T>, std::enable_shared_from_this<T> {
 public:
     Token op;
-    std::shared_ptr<Expr> right;
-    Unary( Token op, std::shared_ptr<Expr> right) :
+    std::shared_ptr<Expr<T>> right;
+    Unary( Token op, std::shared_ptr<Expr<T>> right) :
        op(op),right(right){}
-    void accept(Visitor* visitor) override {
+    void accept(Visitor<T>* visitor) override {
         return visitor->visitUnaryExpr(this);
     };
 };
