@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "interpreter.h"
 
 class Lox
 {
@@ -8,6 +9,8 @@ class Lox
     void run_prompt();
     
     static bool s_HadError;
+    static bool s_HadRuntimeError;
 private:
+    static Interpreter interpreter;
     void run(const std::string&);
 };

@@ -22,7 +22,7 @@ template<class T>
 class Expr{
 public:
     virtual ~Expr() = default;
-    virtual void accept(Visitor<T>* visitor) = 0;
+    virtual T accept(Visitor<T>* visitor) = 0;
 };
 template<class T>
 class Binary : public Expr<T>, std::enable_shared_from_this<T> {
@@ -32,7 +32,7 @@ public:
     std::shared_ptr<Expr<T>> right;
     Binary( std::shared_ptr<Expr<T>> left, Token op, std::shared_ptr<Expr<T>> right) :
        left(left),op(op),right(right){}
-    void accept(Visitor<T>* visitor) override {
+    T accept(Visitor<T>* visitor) override {
         return visitor->visitBinaryExpr(this);
     };
 };
@@ -42,7 +42,7 @@ public:
     std::shared_ptr<Expr<T>> expression;
     Grouping( std::shared_ptr<Expr<T>> expression) :
        expression(expression){}
-    void accept(Visitor<T>* visitor) override {
+    T accept(Visitor<T>* visitor) override {
         return visitor->visitGroupingExpr(this);
     };
 };
@@ -52,7 +52,7 @@ public:
     Object value;
     Literal( Object value) :
        value(value){}
-    void accept(Visitor<T>* visitor) override {
+    T accept(Visitor<T>* visitor) override {
         return visitor->visitLiteralExpr(this);
     };
 };
@@ -63,7 +63,7 @@ public:
     std::shared_ptr<Expr<T>> right;
     Unary( Token op, std::shared_ptr<Expr<T>> right) :
        op(op),right(right){}
-    void accept(Visitor<T>* visitor) override {
+    T accept(Visitor<T>* visitor) override {
         return visitor->visitUnaryExpr(this);
     };
 };

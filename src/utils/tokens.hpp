@@ -3,8 +3,8 @@
 #include <string>
 #include <ostream>
 #include <unordered_map>
-#include <variant>
 #include <vector>
+#include "object.h"
 
 enum class TokenType {
     // Single - character tokens.
@@ -92,15 +92,7 @@ static std::unordered_map<std::string, TokenType> keywords {
 
 };
 
-struct Object
-{
-    std::variant<std::monostate, std::string, double, int> literal;
-public:
-    Object() : literal(std::monostate{}) {}
-    Object(double d) : literal(d) {}
-    Object(const std::string& s) : literal(s) {}
-    Object(bool b) : literal(b) {}
-};
+
 
 struct Token
 {

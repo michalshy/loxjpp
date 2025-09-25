@@ -53,7 +53,7 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
     out << "class " << base_name << "{" << std::endl;
     out << "public:" << std::endl;
     out << "    virtual ~" << base_name << "() = default;" << std::endl;
-    out << "    virtual void accept(Visitor<T>* visitor) = 0;" << std::endl;
+    out << "    virtual T accept(Visitor<T>* visitor) = 0;" << std::endl;
     out << "};" << std::endl;
 
 
@@ -98,7 +98,7 @@ void define_ast(std::string output, std::string base_name, std::vector<std::stri
 
         out << constructor << std::endl;
 
-        out << "    void accept(Visitor<T>* visitor) override {" << std::endl;
+        out << "    T accept(Visitor<T>* visitor) override {" << std::endl;
         out << "        return visitor->visit" + class_name + base_name + "(std::dynamic_pointer_cast<" + class_name + "<T>>(this));" << std::endl;
         out << "    };" << std::endl;
 

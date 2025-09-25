@@ -15,6 +15,8 @@ int main(int argc, char** argv) {
 
     if(Lox::s_HadError)
         return 65;
+    if(Lox::s_HadRuntimeError)
+        return 70;
     
     return 0;
 }

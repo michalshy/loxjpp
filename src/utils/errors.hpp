@@ -5,6 +5,23 @@
 #include "tokens.hpp"
 #include "../lox.h"
 
+class RuntimeError : std::exception
+{
+    std::string full_message;
+public:
+    Token token;
+    RuntimeError(Token _token, std::string _message)
+    {
+        token = _token;
+        full_message = "Runtime error: " + _message + " at '" + _token.m_Lexeme + "' on line " + std::to_string(_token.m_Line);
+    }
+    const char* what()
+    {
+        return full_message.c_str();
+    }
+};
+
+
 static void report(int line, std::string_view where, std::string_view message)
 {
     std::cout << "[line " << line << "] Error" << where << ": " << message << std::endl;
@@ -28,5 +45,10 @@ static void error(Token token, std::string message)
     }
 }
 
+static void runtimeError(RuntimeError error)
+{
+    std::cout << error.what() << "\n[line " << error.token.m_Line << "]";
+    Lox::s_HadRuntimeError = true;
+}
 
 

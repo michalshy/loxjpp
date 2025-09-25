@@ -1,14 +1,18 @@
 #include "lox.h"
 #include "expr.h"
+#include "interpreter.h"
 #include "parser.h"
 #include "scanner.h"
+#include "utils/object.h"
 #include "utils/tree_printer.hpp"
 #include <fstream>
 #include <ios>
 #include <iostream>
 #include <memory>
 
+Interpreter Lox::interpreter = Interpreter();
 bool Lox::s_HadError = false;
+bool Lox::s_HadRuntimeError = false;
 
 void Lox::run_file(const std::string& file_name)
 {
@@ -44,10 +48,11 @@ void Lox::run(const std::string& source)
     Scanner scanner = Scanner(source);
     std::vector<Token> tokens = scanner.scan_tokens();
 
-    Parser parser = Parser<void>(tokens);
-    std::shared_ptr<Expr<void>> expression = parser.parse();
+    Parser parser = Parser<Object>(tokens);
+    std::shared_ptr<Expr<Object>> expression = parser.parse();
 
     if(s_HadError) return;
 
-    TreePrinter().print(*expression);
+    //TreePrinter().print(*expression);
+    Lox::interpreter.interpret(expression);
 }
