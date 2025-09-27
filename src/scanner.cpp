@@ -130,7 +130,7 @@ void Scanner::string()
 
     advance(); // Closing "
 
-    std::string value = m_Source.substr(m_Start + 1, m_Current - m_Start - 1);
+    std::string value = m_Source.substr(m_Start + 1, m_Current - m_Start - 2);
     add_token(TokenType::STRING, Object{value});
 }
 
@@ -170,7 +170,7 @@ void Scanner::identifier()
 {
     while(is_alpha_numeric(peek())) advance();
 
-    std::string text = m_Source.substr(m_Start, m_Current);
+    std::string text = m_Source.substr(m_Start, m_Current - m_Start);
 
     TokenType type = TokenType::IDENTIFIER;
     if (keywords.find(text) != keywords.end()) {

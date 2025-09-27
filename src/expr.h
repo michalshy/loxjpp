@@ -1,69 +1,82 @@
 #pragma once
 #include "utils/tokens.hpp"
 #include <memory>
-template<class T>
+class Assign;
 class Binary;
-template<class T>
 class Grouping;
-template<class T>
 class Literal;
-template<class T>
 class Unary;
-template<class T>
-class Visitor
+class Variable;
+class VisitorExpr
 {
 public:
-    virtual T visitBinaryExpr(Binary<T>* expr) = 0;
-    virtual T visitGroupingExpr(Grouping<T>* expr) = 0;
-    virtual T visitLiteralExpr(Literal<T>* expr) = 0;
-    virtual T visitUnaryExpr(Unary<T>* expr) = 0;
+    virtual Object visitAssignExpr(Assign* expr) = 0;
+    virtual Object visitBinaryExpr(Binary* expr) = 0;
+    virtual Object visitGroupingExpr(Grouping* expr) = 0;
+    virtual Object visitLiteralExpr(Literal* expr) = 0;
+    virtual Object visitUnaryExpr(Unary* expr) = 0;
+    virtual Object visitVariableExpr(Variable* expr) = 0;
 };
-template<class T>
 class Expr{
 public:
     virtual ~Expr() = default;
-    virtual T accept(Visitor<T>* visitor) = 0;
+    virtual Object accept(VisitorExpr* visitor) = 0;
 };
-template<class T>
-class Binary : public Expr<T>, std::enable_shared_from_this<T> {
+class Assign : public Expr {
 public:
-    std::shared_ptr<Expr<T>> left;
+    Token name;
+    std::shared_ptr<Expr> value;
+    Assign( Token name, std::shared_ptr<Expr> value) :
+       name(name),value(value){}
+    Object accept(VisitorExpr* visitor) override {
+        return visitor->visitAssignExpr(this);
+    };
+};
+class Binary : public Expr {
+public:
+    std::shared_ptr<Expr> left;
     Token op;
-    std::shared_ptr<Expr<T>> right;
-    Binary( std::shared_ptr<Expr<T>> left, Token op, std::shared_ptr<Expr<T>> right) :
+    std::shared_ptr<Expr> right;
+    Binary( std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right) :
        left(left),op(op),right(right){}
-    T accept(Visitor<T>* visitor) override {
+    Object accept(VisitorExpr* visitor) override {
         return visitor->visitBinaryExpr(this);
     };
 };
-template<class T>
-class Grouping : public Expr<T>, std::enable_shared_from_this<T> {
+class Grouping : public Expr {
 public:
-    std::shared_ptr<Expr<T>> expression;
-    Grouping( std::shared_ptr<Expr<T>> expression) :
+    std::shared_ptr<Expr> expression;
+    Grouping( std::shared_ptr<Expr> expression) :
        expression(expression){}
-    T accept(Visitor<T>* visitor) override {
+    Object accept(VisitorExpr* visitor) override {
         return visitor->visitGroupingExpr(this);
     };
 };
-template<class T>
-class Literal : public Expr<T>, std::enable_shared_from_this<T> {
+class Literal : public Expr {
 public:
     Object value;
     Literal( Object value) :
        value(value){}
-    T accept(Visitor<T>* visitor) override {
+    Object accept(VisitorExpr* visitor) override {
         return visitor->visitLiteralExpr(this);
     };
 };
-template<class T>
-class Unary : public Expr<T>, std::enable_shared_from_this<T> {
+class Unary : public Expr {
 public:
     Token op;
-    std::shared_ptr<Expr<T>> right;
-    Unary( Token op, std::shared_ptr<Expr<T>> right) :
+    std::shared_ptr<Expr> right;
+    Unary( Token op, std::shared_ptr<Expr> right) :
        op(op),right(right){}
-    T accept(Visitor<T>* visitor) override {
+    Object accept(VisitorExpr* visitor) override {
         return visitor->visitUnaryExpr(this);
+    };
+};
+class Variable : public Expr {
+public:
+    Token name;
+    Variable( Token name) :
+       name(name){}
+    Object accept(VisitorExpr* visitor) override {
+        return visitor->visitVariableExpr(this);
     };
 };

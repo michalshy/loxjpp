@@ -1,26 +1,32 @@
 #include "interpreter.h"
+#include "environment.h"
 #include "expr.h"
+#include "stmt.h"
 #include "utils/object.h"
 #include "utils/tokens.hpp"
 #include <exception>
 #include <memory>
 #include <string>
+#include <sys/types.h>
 #include <variant>
 #include <iostream>
+#include <vector>
 #include "utils/errors.hpp"
 
 
-void Interpreter::interpret(std::shared_ptr<Expr<Object>> expr)
+void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> statements)
 {
     try {
-        Object value = evaluate(expr);
-        std::cout << stringify(value) << std::endl;
+        for (const auto& statement : statements)
+        {
+            execute(statement);
+        }
     } catch (RuntimeError error) {
         runtimeError(error);
     }
 }
 
-Object Interpreter::visitUnaryExpr(Unary<Object> *expr) 
+Object Interpreter::visitUnaryExpr(Unary *expr) 
 {
     Object right = evaluate(expr->right);
 
@@ -36,7 +42,7 @@ Object Interpreter::visitUnaryExpr(Unary<Object> *expr)
             return Object();
     }
 }
-Object Interpreter::visitBinaryExpr(Binary<Object> *expr) 
+Object Interpreter::visitBinaryExpr(Binary *expr) 
 {
     Object left = evaluate(expr->left);
     Object right = evaluate(expr->right);
@@ -91,16 +97,72 @@ Object Interpreter::visitBinaryExpr(Binary<Object> *expr)
     }
     return Object();
 }
-Object Interpreter::visitGroupingExpr(Grouping<Object> *expr) 
+Object Interpreter::visitGroupingExpr(Grouping *expr) 
 {
     return evaluate(expr->expression);
 }
-Object Interpreter::visitLiteralExpr(Literal<Object> *expr) 
+Object Interpreter::visitLiteralExpr(Literal *expr) 
 {
     return expr->value;
 }
 
-Object Interpreter::evaluate(std::shared_ptr<Expr<Object>> expr)
+Object Interpreter::visitVariableExpr(Variable* expr)
+{
+    return env.get(expr->name);
+}
+
+Object Interpreter::visitAssignExpr(Assign *expr)
+{
+    Object value = evaluate(expr->value);
+    env.assign(expr->name, value);
+    return value;
+}
+
+void Interpreter::visitBlockStmt(Block* stmt)
+{
+    executeBlock(stmt->statements, std::make_shared<Environment>(env));
+}
+
+void Interpreter::visitPrintStmt(Print* stmt)
+{
+    Object value = evaluate(stmt->expression);
+    std::cout << stringify(value) << std::endl;
+}
+
+void Interpreter::visitExpressionStmt(Expression* stmt)
+{
+    evaluate(stmt->expression);
+}
+
+void Interpreter::visitVarStmt(Var *stmt)
+{
+    Object value = Object();
+    if(stmt->initializer != nullptr)
+    {
+        value = evaluate(stmt->initializer);
+    }
+
+    env.define(stmt->name.m_Lexeme, value);
+}
+
+void Interpreter::executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env)
+{
+    std::shared_ptr<Environment> previous = std::make_shared<Environment>(this->env);
+    this->env = env;
+
+    for(const auto& statement : statements)
+    {
+        execute(statement);
+    }
+    this->env = previous;
+}
+
+void Interpreter::execute(std::shared_ptr<Stmt> statement)
+{
+    statement->accept(this);
+}
+
+Object Interpreter::evaluate(std::shared_ptr<Expr> expr)
 {
     return expr->accept(this);
 }
