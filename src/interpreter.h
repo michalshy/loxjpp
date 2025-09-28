@@ -15,13 +15,16 @@ public:
     Object visitBinaryExpr(Binary* expr) override;
     Object visitGroupingExpr(Grouping* expr) override;
     Object visitLiteralExpr(Literal* expr) override;
+    Object visitLogicalExpr(Logical *expr) override;
     Object visitVariableExpr(Variable *expr) override;
     Object visitAssignExpr(Assign *expr) override;
     
     void visitBlockStmt(Block *stmt) override;
     void visitPrintStmt(Print* stmt) override;
+    void visitIfStmt(If *stmt) override;
     void visitExpressionStmt(Expression* stmt) override;
     void visitVarStmt(Var *stmt) override;
+    void visitWhileStmt(While *stmt) override;
 private:
     void executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env);
     void execute(std::shared_ptr<Stmt> statements);

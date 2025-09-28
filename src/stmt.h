@@ -1,18 +1,22 @@
 #pragma once
 #include "utils/tokens.hpp"
-#include "expr.h"
 #include <memory>
+#include "expr.h"
 class Block;
 class Expression;
+class If;
 class Print;
 class Var;
+class While;
 class VisitorStmt
 {
 public:
     virtual void visitBlockStmt(Block* stmt) = 0;
     virtual void visitExpressionStmt(Expression* stmt) = 0;
+    virtual void visitIfStmt(If* stmt) = 0;
     virtual void visitPrintStmt(Print* stmt) = 0;
     virtual void visitVarStmt(Var* stmt) = 0;
+    virtual void visitWhileStmt(While* stmt) = 0;
 };
 class Stmt{
 public:
@@ -37,6 +41,17 @@ public:
         return visitor->visitExpressionStmt(this);
     };
 };
+class If : public Stmt {
+public:
+    std::shared_ptr<Expr> condition;
+    std::shared_ptr<Stmt> thenBranch;
+    std::shared_ptr<Stmt> elseBranch;
+    If( std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> thenBranch, std::shared_ptr<Stmt> elseBranch) :
+       condition(condition),thenBranch(thenBranch),elseBranch(elseBranch){}
+    void accept(VisitorStmt* visitor) override {
+        return visitor->visitIfStmt(this);
+    };
+};
 class Print : public Stmt {
 public:
     std::shared_ptr<Expr> expression;
@@ -54,5 +69,15 @@ public:
        name(name),initializer(initializer){}
     void accept(VisitorStmt* visitor) override {
         return visitor->visitVarStmt(this);
+    };
+};
+class While : public Stmt {
+public:
+    std::shared_ptr<Expr> condition;
+    std::shared_ptr<Stmt> body;
+    While( std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body) :
+       condition(condition),body(body){}
+    void accept(VisitorStmt* visitor) override {
+        return visitor->visitWhileStmt(this);
     };
 };

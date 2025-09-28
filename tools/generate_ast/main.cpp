@@ -118,6 +118,7 @@ int main(int argc, char** argv)
         "Binary : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
         "Grouping : std::shared_ptr<Expr> expression",
         "Literal : Object value",
+        "Logical : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
         "Unary : Token op, std::shared_ptr<Expr> right",
         "Variable : Token name"
 
@@ -126,7 +127,9 @@ int main(int argc, char** argv)
     define_ast(output, "Stmt", std::vector<std::string>{
         "Block : std::vector<std::shared_ptr<Stmt>> statements",
         "Expression : std::shared_ptr<Expr> expression",
+        "If : std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> thenBranch, std::shared_ptr<Stmt> elseBranch",
         "Print : std::shared_ptr<Expr> expression",
-        "Var : Token name, std::shared_ptr<Expr> initializer"
+        "Var : Token name, std::shared_ptr<Expr> initializer",
+        "While : std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> body",
     }, "void");
 }

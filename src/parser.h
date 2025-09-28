@@ -57,6 +57,8 @@ private:
     std::shared_ptr<Stmt> statement()
     {
         if(match(TokenType::PRINT)) return printStatement();
+        if(match(TokenType::WHILE)) return whileStatement();
+        if(match(TokenType::IF)) return ifStatement();
         if(match(TokenType::LEFT_BRACE)) return std::make_shared<Block>(block());
 
         return expressionStatement();
@@ -67,6 +69,26 @@ private:
         std::shared_ptr<Expr> val = expression();
         consume(TokenType::SEMICOLON, "Expect ';' after value.");
         return std::make_shared<Print>(Print(val));
+    }
+
+    std::shared_ptr<Stmt> whileStatement()
+    {
+        
+    }
+
+    std::shared_ptr<Stmt> ifStatement()
+    {
+        consume(TokenType::LEFT_BRACE, "Expect '(' after if.");
+        std::shared_ptr<Expr> conditon = expression();
+        consume(TokenType::RIGHT_BRACE, "Expect ')' after if condition");
+
+        std::shared_ptr<Stmt> thenBranch = statement();
+        std::shared_ptr<Stmt> elseBranch;
+        if(match(TokenType::ELSE))
+        {
+            elseBranch = statement();
+        }
+        return std::make_shared<If>(conditon, thenBranch, elseBranch);
     }
 
     std::shared_ptr<Stmt> expressionStatement()
@@ -135,7 +157,7 @@ private:
 
     std::shared_ptr<Expr> assignment()
     {
-        std::shared_ptr<Expr> expr = equality();
+        std::shared_ptr<Expr> expr = or_logical();
 
         if(match(TokenType::EQUAL))
         {
@@ -154,6 +176,34 @@ private:
         return expr;
     }
 
+    std::shared_ptr<Expr> or_logical()
+    {
+        std::shared_ptr<Expr> expr = and_logical();
+
+        while(match(TokenType::OR))
+        {
+            Token op = previous();
+            std::shared_ptr<Expr> right = and_logical();
+            expr = std::make_shared<Logical>(expr, op, right);
+        }
+
+        return expr;
+    }
+
+    std::shared_ptr<Expr> and_logical()
+    {
+        std::shared_ptr<Expr> expr = equality();
+
+        while(match(TokenType::OR))
+        {
+            Token op = previous();
+            std::shared_ptr<Expr> right = equality();
+            expr = std::make_shared<Logical>(expr, op, right);
+        }
+
+        return expr;
+    }
+    
     std::shared_ptr<Expr> equality()
     {
         std::shared_ptr<Expr> expr = comparision();

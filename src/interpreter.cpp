@@ -106,6 +106,20 @@ Object Interpreter::visitLiteralExpr(Literal *expr)
     return expr->value;
 }
 
+Object Interpreter::visitLogicalExpr(Logical *expr)
+{
+    Object left = evaluate(expr->left);
+
+    if(expr->op.m_Type == TokenType::OR)
+    {
+        if(isTruthy(left)) return left;
+    } else {
+        if(!isTruthy(left)) return left;
+    }
+
+    return evaluate(expr->right);
+}
+
 Object Interpreter::visitVariableExpr(Variable* expr)
 {
     return env.get(expr->name);
@@ -129,6 +143,18 @@ void Interpreter::visitPrintStmt(Print* stmt)
     std::cout << stringify(value) << std::endl;
 }
 
+void Interpreter::visitIfStmt(If* stmt)
+{
+    if(isTruthy(evaluate(stmt->condition)))
+    {
+        execute(stmt->thenBranch);
+    } 
+    else if (stmt->elseBranch != nullptr)
+    {
+        execute(stmt->elseBranch);
+    }
+}
+
 void Interpreter::visitExpressionStmt(Expression* stmt)
 {
     evaluate(stmt->expression);
@@ -144,6 +170,12 @@ void Interpreter::visitVarStmt(Var *stmt)
 
     env.define(stmt->name.m_Lexeme, value);
 }
+
+void Interpreter::visitWhileStmt(While *stmt)
+{
+    
+}
+
 
 void Interpreter::executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env)
 {
