@@ -173,9 +173,11 @@ void Interpreter::visitVarStmt(Var *stmt)
 
 void Interpreter::visitWhileStmt(While *stmt)
 {
-    
+    while(isTruthy(evaluate(stmt->condition)))
+    {
+        execute(stmt->body);
+    }
 }
-
 
 void Interpreter::executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env)
 {
