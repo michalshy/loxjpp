@@ -4,7 +4,6 @@
 #include "stmt.h"
 #include "utils/object.h"
 #include "utils/tokens.hpp"
-#include <exception>
 #include <memory>
 #include <string>
 #include <sys/types.h>

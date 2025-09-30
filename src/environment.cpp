@@ -24,7 +24,7 @@ void Environment::assign(Token name, Object value)
 {
     if(values.find(name.m_Lexeme) != values.end())
     {
-        values.insert({name.m_Lexeme, value});
+        values[name.m_Lexeme] = value;
         return;
     }
 

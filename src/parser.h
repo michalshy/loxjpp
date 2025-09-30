@@ -219,7 +219,6 @@ private:
         if(match(TokenType::EQUAL))
         {
             Token equals = previous();
-            std::cout << equals.m_Lexeme << std::endl;
             std::shared_ptr<Expr> value = assignment();
             Variable* var_expr = dynamic_cast<Variable*>(expr.get());
             if(var_expr)

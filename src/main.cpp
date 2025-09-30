@@ -14,9 +14,17 @@ int main(int argc, char** argv) {
     }
 
     if(Lox::s_HadError)
+    {
+        std::cin.get();
         return 65;
+    }
     if(Lox::s_HadRuntimeError)
+    {
+        std::cin.get();
         return 70;
+    }
     
+    // pause console
+    std::cin.get();
     return 0;
 }
