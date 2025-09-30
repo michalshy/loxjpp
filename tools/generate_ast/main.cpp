@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include <algorithm>
+#include <sstream>
 
 void define_visitor(std::ofstream& stream, std::string base_name, std::vector<std::string> types, std::string visitor_name, std::string visitor_type)
 {
@@ -116,6 +117,7 @@ int main(int argc, char** argv)
     define_ast(output, "Expr", std::vector<std::string>{
         "Assign : Token name, std::shared_ptr<Expr> value",
         "Binary : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
+        "Call : std::shared_ptr<Expr> callee, Token paren, std::vector<std::shared_ptr<Expr>> arguments",
         "Grouping : std::shared_ptr<Expr> expression",
         "Literal : Object value",
         "Logical : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
