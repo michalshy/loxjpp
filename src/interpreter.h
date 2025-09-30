@@ -13,6 +13,7 @@ public:
 
     Object visitUnaryExpr(Unary* expr) override;
     Object visitBinaryExpr(Binary* expr) override;
+    Object visitCallExpr(Call* expr) override;
     Object visitGroupingExpr(Grouping* expr) override;
     Object visitLiteralExpr(Literal* expr) override;
     Object visitLogicalExpr(Logical *expr) override;

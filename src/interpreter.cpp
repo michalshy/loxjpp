@@ -1,6 +1,7 @@
 #include "interpreter.h"
 #include "environment.h"
 #include "expr.h"
+#include "lox_function.h"
 #include "stmt.h"
 #include "utils/object.h"
 #include "utils/tokens.hpp"
@@ -11,7 +12,7 @@
 #include <iostream>
 #include <vector>
 #include "utils/errors.hpp"
-
+#include "lox_callable.h"
 
 void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> statements)
 {
@@ -96,6 +97,23 @@ Object Interpreter::visitBinaryExpr(Binary *expr)
     }
     return Object();
 }
+
+Object Interpreter::visitCallExpr(Call* expr)
+{
+    Object callee = evaluate(expr->callee);
+
+    std::vector<Object> arguments;
+    for (const auto& argument : expr->arguments)
+    {
+        arguments.push_back(evaluate(argument));
+    }
+
+    auto function = std::dynamic_pointer_cast<LoxCallable>(callee);
+    // Assuming Object::literal holds std::shared_ptr<LoxFunction> for functions
+    //auto functionPtr = std::get<std::shared_ptr<LoxFunction>>(callee);
+    //return functionPtr->call(this, arguments);
+}
+
 Object Interpreter::visitGroupingExpr(Grouping *expr) 
 {
     return evaluate(expr->expression);

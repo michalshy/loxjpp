@@ -2,10 +2,10 @@
 #include <variant>
 #include <string>
 
-struct Object
+class Object
 {
-    std::variant<std::monostate, std::string, double, bool> literal;
 public:
+    std::variant<std::monostate, std::string, double, bool> literal;
     Object() : literal(std::monostate{}) {}
     Object(double d) : literal(d) {}
     Object(const std::string& s) : literal(s) {}

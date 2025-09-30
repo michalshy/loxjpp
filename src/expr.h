@@ -1,8 +1,10 @@
 #pragma once
 #include "utils/tokens.hpp"
 #include <memory>
+#include <vector>
 class Assign;
 class Binary;
+class Call;
 class Grouping;
 class Literal;
 class Logical;
@@ -13,6 +15,7 @@ class VisitorExpr
 public:
     virtual Object visitAssignExpr(Assign* expr) = 0;
     virtual Object visitBinaryExpr(Binary* expr) = 0;
+    virtual Object visitCallExpr(Call* expr) = 0;
     virtual Object visitGroupingExpr(Grouping* expr) = 0;
     virtual Object visitLiteralExpr(Literal* expr) = 0;
     virtual Object visitLogicalExpr(Logical* expr) = 0;
@@ -43,6 +46,17 @@ public:
        left(left),op(op),right(right){}
     Object accept(VisitorExpr* visitor) override {
         return visitor->visitBinaryExpr(this);
+    };
+};
+class Call : public Expr {
+public:
+    std::shared_ptr<Expr> callee;
+    Token paren;
+    std::vector<std::shared_ptr<Expr>> arguments;
+    Call( std::shared_ptr<Expr> callee, Token paren, std::vector<std::shared_ptr<Expr>> arguments) :
+       callee(callee),paren(paren),arguments(arguments){}
+    Object accept(VisitorExpr* visitor) override {
+        return visitor->visitCallExpr(this);
     };
 };
 class Grouping : public Expr {
