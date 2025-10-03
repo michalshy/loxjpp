@@ -5,10 +5,14 @@
 #include "utils/object.h"
 #include <memory>
 
+static Environment globals = Environment();
+
 class Interpreter : public VisitorExpr, VisitorStmt
 {
-    Environment env = Environment();
+    Environment env = globals;
 public:
+    Interpreter();
+
     void interpret(std::vector<std::shared_ptr<Stmt>> statements);
 
     Object visitUnaryExpr(Unary* expr) override;

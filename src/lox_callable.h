@@ -5,8 +5,10 @@
 #include "utils/object.h"
 #include <memory>
 #include <vector>
+
 class LoxCallable
 {
 public:
-    virtual Object call(Interpreter* interpreter, std::vector<Object> arguments) = 0;
+    virtual Object call(Interpreter* interpreter, const std::vector<Object>& arguments) = 0;
+    virtual int arity() = 0;
 };

@@ -4,5 +4,5 @@
 class LoxFunction : public LoxCallable
 {
 public:
-    Object call(Interpreter* interpreter, std::vector<Object> arguments) override;
+    Object call(Interpreter* interpreter, const std::vector<Object>& arguments) override;
 };

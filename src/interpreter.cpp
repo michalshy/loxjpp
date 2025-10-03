@@ -5,6 +5,7 @@
 #include "stmt.h"
 #include "utils/object.h"
 #include "utils/tokens.hpp"
+#include <chrono>
 #include <memory>
 #include <string>
 #include <sys/types.h>
@@ -13,6 +14,36 @@
 #include <vector>
 #include "utils/errors.hpp"
 #include "lox_callable.h"
+
+class NativeCallable : public LoxCallable {
+    std::function<Object(Interpreter*, const std::vector<Object>&)> function;
+    int arity_val;
+public:
+    NativeCallable(std::function<Object(Interpreter*, const std::vector<Object>&)> func, int arity)
+        : function(func), arity_val(arity) {}
+    Object call(Interpreter* interpreter, const std::vector<Object>& arguments) override
+    {
+        return function(interpreter, arguments);
+    }
+
+    int arity() override
+    {
+        return arity_val;
+    }
+
+    std::string to_string() { return "<native fn>"; }
+};
+
+Interpreter::Interpreter()
+{
+    auto clock_lambda = [](Interpreter* interpreter, const std::vector<Object>& arguments) -> Object {
+        auto now = std::chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        double seconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() / 1000.0;
+        return Object(seconds);
+    };
+    globals.define("clock", Object(std::make_shared<NativeCallable>(clock_lambda, 0)));
+}
 
 void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> statements)
 {
@@ -108,10 +139,18 @@ Object Interpreter::visitCallExpr(Call* expr)
         arguments.push_back(evaluate(argument));
     }
 
-    auto function = std::dynamic_pointer_cast<LoxCallable>(callee);
-    // Assuming Object::literal holds std::shared_ptr<LoxFunction> for functions
-    //auto functionPtr = std::get<std::shared_ptr<LoxFunction>>(callee);
-    //return functionPtr->call(this, arguments);
+    try {
+        std::shared_ptr<LoxCallable> function = std::get<std::shared_ptr<LoxCallable>>(callee.literal);
+
+        if(arguments.size() != function->arity())
+        {
+            throw RuntimeError(expr->paren, "Expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
+        }
+
+        return function->call(this, arguments);
+    } catch (const std::bad_variant_access&) {
+        throw RuntimeError(expr->paren, "Can only call functions and classes.");
+    }
 }
 
 Object Interpreter::visitGroupingExpr(Grouping *expr) 
