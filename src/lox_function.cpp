@@ -1,6 +1,7 @@
 #include "lox_function.h"
 #include "environment.h"
 #include "interpreter.h"
+#include "utils/errors.hpp"
 #include "utils/object.h"
 #include <memory>
 
@@ -12,7 +13,11 @@ Object LoxFunction::call(Interpreter* interpreter, const std::vector<Object>& ar
         env.define(declaration->params[i].m_Lexeme, arguments[i]);
     }
 
-    interpreter->executeBlock(declaration->body, std::make_shared<Environment>(env));
+    try {
+        interpreter->executeBlock(declaration->body, std::make_shared<Environment>(env));
+    } catch (ReturnVal returnVal) {
+        return returnVal.get();
+    }
     return Object();
 }
 

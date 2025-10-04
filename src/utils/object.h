@@ -1,8 +1,6 @@
 #pragma once
 #include <memory>
-#include <utility>
 #include <variant>
-#include <functional>
 #include <string>
 
 class LoxCallable;

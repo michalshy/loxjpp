@@ -14,6 +14,7 @@
 #include <vector>
 #include "utils/errors.hpp"
 #include "lox_callable.h"
+#include <functional>
 
 class NativeCallable : public LoxCallable {
     std::function<Object(Interpreter*, const std::vector<Object>&)> function;
@@ -220,6 +221,14 @@ void Interpreter::visitFunctionStmt(Function* stmt)
 {
     LoxFunction function = LoxFunction(std::make_shared<Function>(*stmt));
     env.define(stmt->name.m_Lexeme, Object(std::make_shared<LoxFunction>(function)));
+}
+
+void Interpreter::visitReturnStmt(Return* stmt)
+{
+    Object value = Object();
+    if(stmt->value != nullptr) value = evaluate(stmt->value);
+
+    throw ReturnVal(value);
 }
 
 void Interpreter::visitVarStmt(Var *stmt)

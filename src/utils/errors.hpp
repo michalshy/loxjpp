@@ -1,7 +1,9 @@
 #pragma once
 
+#include <exception>
 #include <string_view>
 #include <iostream>
+#include "object.h"
 #include "tokens.hpp"
 #include "../lox.h"
 
@@ -19,6 +21,14 @@ public:
     {
         return full_message.c_str();
     }
+};
+
+class ReturnVal :std::exception
+{
+    Object value;
+public:
+    ReturnVal(Object _value) : value(_value) {}
+    Object get() { return value; }
 };
 
 

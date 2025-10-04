@@ -5,7 +5,6 @@
 #include "utils/tokens.hpp"
 #include "utils/errors.hpp"
 #include "stmt.h"
-#include <cstddef>
 #include <memory>
 #include <vector>
 
@@ -81,6 +80,7 @@ private:
     std::shared_ptr<Stmt> statement()
     {
         if(match(TokenType::PRINT)) return printStatement();
+        if(match(TokenType::RETURN)) return returnStatement();
         if(match(TokenType::WHILE)) return whileStatement();
         if(match(TokenType::FOR)) return forStatement();
         if(match(TokenType::IF)) return ifStatement();
@@ -94,6 +94,18 @@ private:
         std::shared_ptr<Expr> val = expression();
         consume(TokenType::SEMICOLON, "Expect ';' after value.");
         return std::make_shared<Print>(Print(val));
+    }
+
+    std::shared_ptr<Stmt> returnStatement()
+    {
+        Token keyword = previous();
+        std::shared_ptr<Expr> value;
+        if(!check(TokenType::SEMICOLON))
+        {
+            value = expression();
+        }
+        consume(TokenType::SEMICOLON, "Expect ';' after return value.");
+        return std::make_shared<Return>(keyword, value);
     }
 
     std::shared_ptr<Stmt> whileStatement()
@@ -158,9 +170,9 @@ private:
 
     std::shared_ptr<Stmt> ifStatement()
     {
-        consume(TokenType::LEFT_BRACE, "Expect '(' after if.");
+        consume(TokenType::LEFT_PAREN, "Expect '(' after if.");
         std::shared_ptr<Expr> conditon = expression();
-        consume(TokenType::RIGHT_BRACE, "Expect ')' after if condition");
+        consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition");
 
         std::shared_ptr<Stmt> thenBranch = statement();
         std::shared_ptr<Stmt> elseBranch;

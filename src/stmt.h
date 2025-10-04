@@ -1,12 +1,13 @@
 #pragma once
 #include "utils/tokens.hpp"
-#include <memory>
 #include "expr.h"
+#include <memory>
 class Block;
 class Expression;
 class Function;
 class If;
 class Print;
+class Return;
 class Var;
 class While;
 class VisitorStmt
@@ -17,6 +18,7 @@ public:
     virtual void visitFunctionStmt(Function* stmt) = 0;
     virtual void visitIfStmt(If* stmt) = 0;
     virtual void visitPrintStmt(Print* stmt) = 0;
+    virtual void visitReturnStmt(Return* stmt) = 0;
     virtual void visitVarStmt(Var* stmt) = 0;
     virtual void visitWhileStmt(While* stmt) = 0;
 };
@@ -72,6 +74,16 @@ public:
        expression(expression){}
     void accept(VisitorStmt* visitor) override {
         return visitor->visitPrintStmt(this);
+    };
+};
+class Return : public Stmt {
+public:
+    Token keyword;
+    std::shared_ptr<Expr> value;
+    Return( Token keyword, std::shared_ptr<Expr> value) :
+       keyword(keyword),value(value){}
+    void accept(VisitorStmt* visitor) override {
+        return visitor->visitReturnStmt(this);
     };
 };
 class Var : public Stmt {

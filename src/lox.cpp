@@ -1,10 +1,8 @@
 #include "lox.h"
-#include "expr.h"
 #include "interpreter.h"
 #include "parser.h"
 #include "scanner.h"
 #include "stmt.h"
-#include "utils/object.h"
 #include <fstream>
 #include <ios>
 #include <iostream>

@@ -2,7 +2,6 @@
 
 #include <cstdio>
 #include "utils/tokens.hpp"
-#include <vector>
 #include <string>
 
 class Scanner

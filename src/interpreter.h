@@ -29,6 +29,7 @@ public:
     void visitIfStmt(If *stmt) override;
     void visitExpressionStmt(Expression* stmt) override;
     void visitFunctionStmt(Function *stmt) override;
+    void visitReturnStmt(Return *stmt) override;
     void visitVarStmt(Var *stmt) override;
     void visitWhileStmt(While *stmt) override;
     void executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env);
