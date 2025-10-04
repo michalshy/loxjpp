@@ -31,7 +31,7 @@ public:
         return arity_val;
     }
 
-    std::string to_string() { return "<native fn>"; }
+    std::string to_string() override { return "<native fn>"; }
 };
 
 Interpreter::Interpreter()
@@ -214,6 +214,12 @@ void Interpreter::visitIfStmt(If* stmt)
 void Interpreter::visitExpressionStmt(Expression* stmt)
 {
     evaluate(stmt->expression);
+}
+
+void Interpreter::visitFunctionStmt(Function* stmt)
+{
+    LoxFunction function = LoxFunction(std::make_shared<Function>(*stmt));
+    env.define(stmt->name.m_Lexeme, Object(std::make_shared<LoxFunction>(function)));
 }
 
 void Interpreter::visitVarStmt(Var *stmt)

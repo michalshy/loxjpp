@@ -28,10 +28,11 @@ public:
     void visitPrintStmt(Print* stmt) override;
     void visitIfStmt(If *stmt) override;
     void visitExpressionStmt(Expression* stmt) override;
+    void visitFunctionStmt(Function *stmt) override;
     void visitVarStmt(Var *stmt) override;
     void visitWhileStmt(While *stmt) override;
-private:
     void executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env);
+private:
     void execute(std::shared_ptr<Stmt> statements);
     Object evaluate(std::shared_ptr<Expr> expr);
     bool isTruthy(Object object);

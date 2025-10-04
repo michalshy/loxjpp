@@ -4,6 +4,7 @@
 #include "expr.h"
 class Block;
 class Expression;
+class Function;
 class If;
 class Print;
 class Var;
@@ -13,6 +14,7 @@ class VisitorStmt
 public:
     virtual void visitBlockStmt(Block* stmt) = 0;
     virtual void visitExpressionStmt(Expression* stmt) = 0;
+    virtual void visitFunctionStmt(Function* stmt) = 0;
     virtual void visitIfStmt(If* stmt) = 0;
     virtual void visitPrintStmt(Print* stmt) = 0;
     virtual void visitVarStmt(Var* stmt) = 0;
@@ -39,6 +41,17 @@ public:
        expression(expression){}
     void accept(VisitorStmt* visitor) override {
         return visitor->visitExpressionStmt(this);
+    };
+};
+class Function : public Stmt {
+public:
+    Token name;
+    std::vector<Token> params;
+    std::vector<std::shared_ptr<Stmt>> body;
+    Function( Token name, std::vector<Token> params, std::vector<std::shared_ptr<Stmt>> body) :
+       name(name),params(params),body(body){}
+    void accept(VisitorStmt* visitor) override {
+        return visitor->visitFunctionStmt(this);
     };
 };
 class If : public Stmt {
