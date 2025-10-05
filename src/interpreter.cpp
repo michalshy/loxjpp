@@ -43,7 +43,7 @@ Interpreter::Interpreter()
         double seconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() / 1000.0;
         return Object(seconds);
     };
-    globals.define("clock", Object(std::make_shared<NativeCallable>(clock_lambda, 0)));
+    globals->define("clock", Object(std::make_shared<NativeCallable>(clock_lambda, 0)));
 }
 
 void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> statements)
@@ -179,19 +179,19 @@ Object Interpreter::visitLogicalExpr(Logical *expr)
 
 Object Interpreter::visitVariableExpr(Variable* expr)
 {
-    return env.get(expr->name);
+    return env->get(expr->name);
 }
 
 Object Interpreter::visitAssignExpr(Assign *expr)
 {
     Object value = evaluate(expr->value);
-    env.assign(expr->name, value);
+    env->assign(expr->name, value);
     return value;
 }
 
 void Interpreter::visitBlockStmt(Block* stmt)
 {
-    executeBlock(stmt->statements, std::make_shared<Environment>(env));
+    executeBlock(stmt->statements, env);
 }
 
 void Interpreter::visitPrintStmt(Print* stmt)
@@ -220,7 +220,7 @@ void Interpreter::visitExpressionStmt(Expression* stmt)
 void Interpreter::visitFunctionStmt(Function* stmt)
 {
     LoxFunction function = LoxFunction(std::make_shared<Function>(*stmt));
-    env.define(stmt->name.m_Lexeme, Object(std::make_shared<LoxFunction>(function)));
+    env->define(stmt->name.m_Lexeme, Object(std::make_shared<LoxFunction>(function)));
 }
 
 void Interpreter::visitReturnStmt(Return* stmt)
@@ -239,7 +239,7 @@ void Interpreter::visitVarStmt(Var *stmt)
         value = evaluate(stmt->initializer);
     }
 
-    env.define(stmt->name.m_Lexeme, value);
+    env->define(stmt->name.m_Lexeme, value);
 }
 
 void Interpreter::visitWhileStmt(While *stmt)
@@ -250,10 +250,10 @@ void Interpreter::visitWhileStmt(While *stmt)
     }
 }
 
-void Interpreter::executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env)
+void Interpreter::executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> environment)
 {
-    std::shared_ptr<Environment> previous = std::make_shared<Environment>(this->env);
-    this->env = env;
+    std::shared_ptr<Environment> previous = this->env;
+    this->env = environment;
 
     for(const auto& statement : statements)
     {

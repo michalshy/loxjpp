@@ -16,4 +16,5 @@ public:
     void define(std::string name, Object value);
     Object get(Token name);
     void assign(Token name, Object value);
+    int size(){ return values.size(); }
 };

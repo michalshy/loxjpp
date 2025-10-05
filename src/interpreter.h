@@ -5,11 +5,11 @@
 #include "utils/object.h"
 #include <memory>
 
-static Environment globals = Environment();
+static std::shared_ptr<Environment> globals = std::make_shared<Environment>();
 
 class Interpreter : public VisitorExpr, VisitorStmt
 {
-    Environment env = globals;
+    std::shared_ptr<Environment> env = globals;
 public:
     Interpreter();
 
@@ -33,6 +33,8 @@ public:
     void visitVarStmt(Var *stmt) override;
     void visitWhileStmt(While *stmt) override;
     void executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env);
+
+    std::shared_ptr<Environment> get_env() { return env; }
 private:
     void execute(std::shared_ptr<Stmt> statements);
     Object evaluate(std::shared_ptr<Expr> expr);

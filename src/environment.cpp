@@ -17,7 +17,7 @@ Object Environment::get(Token name)
 
     if(enclosing != nullptr) return enclosing->get(name);
 
-    throw RuntimeError(name, "Undefined variable '" + name.m_Lexeme + "'.");
+    throw RuntimeError(name, "Undefined variable '" + name.m_Lexeme + "'"); // errors here
 }
 
 void Environment::assign(Token name, Object value)

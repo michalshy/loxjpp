@@ -285,7 +285,7 @@ private:
     {
         std::shared_ptr<Expr> expr = equality();
 
-        while(match(TokenType::OR))
+        while(match(TokenType::AND))
         {
             Token op = previous();
             std::shared_ptr<Expr> right = equality();
