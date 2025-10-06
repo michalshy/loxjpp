@@ -448,7 +448,7 @@ private:
     {
         advance();
 
-        while(isAtEnd())
+        while(!isAtEnd())
         {
             if(previous().m_Type == TokenType::SEMICOLON) return;
             switch (peek().m_Type) {

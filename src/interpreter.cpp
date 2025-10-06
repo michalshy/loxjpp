@@ -101,7 +101,9 @@ Object Interpreter::visitBinaryExpr(Binary *expr)
                 throw RuntimeError(expr->op, "Operands must be a number");
         case TokenType::PLUS:
             if(std::holds_alternative<double>(right.literal) && std::holds_alternative<double>(left.literal))
+            {
                 return std::get<double>(left.literal) + std::get<double>(right.literal);
+            }
             if(std::holds_alternative<std::string>(right.literal) && std::holds_alternative<std::string>(left.literal) ) 
                 return std::get<std::string>(left.literal) + std::get<std::string>(right.literal);
             else
@@ -223,15 +225,18 @@ void Interpreter::visitExpressionStmt(Expression* stmt)
 
 void Interpreter::visitFunctionStmt(Function* stmt)
 {
-    LoxFunction function = LoxFunction(std::make_shared<Function>(*stmt));
+    LoxFunction function = LoxFunction(std::make_shared<Function>(*stmt), env);
     env->define(stmt->name.m_Lexeme, Object(std::make_shared<LoxFunction>(function)));
 }
 
 void Interpreter::visitReturnStmt(Return* stmt)
 {
     Object value = Object();
-    if(stmt->value != nullptr) value = evaluate(stmt->value);
-
+    
+    if(stmt->value != nullptr)
+    {
+        value = evaluate(stmt->value);
+    } 
     throw ReturnVal(value);
 }
 

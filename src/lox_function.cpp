@@ -7,7 +7,7 @@
 
 Object LoxFunction::call(Interpreter* interpreter, const std::vector<Object>& arguments)
 {
-    std::shared_ptr<Environment> environment = std::make_shared<Environment>(Globals::GetInstance()->get_env());
+    std::shared_ptr<Environment> environment = std::make_shared<Environment>(closure);
     for(int i = 0; i < declaration->params.size(); i++)
     {
         environment->define(declaration->params[i].m_Lexeme, arguments[i]);

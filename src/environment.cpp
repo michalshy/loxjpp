@@ -5,11 +5,12 @@
 
 void Environment::define(std::string name, Object value)
 {
-    values.insert({name, value});
+    values[name] = value;
 }
 
 Object Environment::get(Token name)
 {
+    
     if(values.find(name.m_Lexeme) != values.end())
     {
         return values[name.m_Lexeme];
