@@ -52,6 +52,5 @@ void Lox::run(const std::string& source)
 
     if(s_HadError) return;
 
-    //TreePrinter().print(*expression);
     Lox::interpreter.interpret(statements);
 }

@@ -16,6 +16,8 @@
 #include "lox_callable.h"
 #include <functional>
 
+Globals* Globals::_globals = nullptr;
+
 class NativeCallable : public LoxCallable {
     std::function<Object(Interpreter*, const std::vector<Object>&)> function;
     int arity_val;
@@ -37,13 +39,15 @@ public:
 
 Interpreter::Interpreter()
 {
+    env = Globals::GetInstance()->get_env();
+
     auto clock_lambda = [](Interpreter* interpreter, const std::vector<Object>& arguments) -> Object {
         auto now = std::chrono::system_clock::now();
         auto duration = now.time_since_epoch();
         double seconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() / 1000.0;
         return Object(seconds);
     };
-    globals->define("clock", Object(std::make_shared<NativeCallable>(clock_lambda, 0)));
+    Globals::GetInstance()->get_env()->define("clock", Object(std::make_shared<NativeCallable>(clock_lambda, 0)));
 }
 
 void Interpreter::interpret(std::vector<std::shared_ptr<Stmt>> statements)

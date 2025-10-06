@@ -5,11 +5,33 @@
 #include "utils/object.h"
 #include <memory>
 
-static std::shared_ptr<Environment> globals = std::make_shared<Environment>();
+
+class Globals
+{
+    std::shared_ptr<Environment> global_env;
+    static Globals* _globals;
+    Globals()
+    {
+        global_env = std::make_shared<Environment>();
+    }
+public:
+
+    static Globals* GetInstance()
+    {
+        if(_globals == nullptr)
+            _globals = new Globals();
+        return _globals;
+    }
+
+    std::shared_ptr<Environment> get_env()
+    {
+        return global_env;
+    }
+};
 
 class Interpreter : public VisitorExpr, VisitorStmt
 {
-    std::shared_ptr<Environment> env = globals;
+    std::shared_ptr<Environment> env;
 public:
     Interpreter();
 
