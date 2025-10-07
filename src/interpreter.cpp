@@ -262,11 +262,19 @@ void Interpreter::visitWhileStmt(While *stmt)
 void Interpreter::executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> environment)
 {
     std::shared_ptr<Environment> previous = this->env;
-    this->env = environment;
-
-    for(const auto& statement : statements)
+    try
     {
-        execute(statement);
+        this->env = environment;
+    
+        for(const auto& statement : statements)
+        {
+            execute(statement);
+        }
+    }
+    catch(...)
+    {
+        this->env = previous;
+        throw;
     }
     this->env = previous;
 }
