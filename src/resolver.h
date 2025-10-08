@@ -4,13 +4,20 @@
 #include "interpreter.h"
 #include "stmt.h"
 #include <memory>
-#include <stack>
 #include <string>
 #include <unordered_map>
+
+enum class FunctionType
+{
+    NONE,
+    FUNCTION
+};
+
 class Resolver : public VisitorExpr, public VisitorStmt
 {
     Interpreter interpreter;
     std::vector<std::unordered_map<std::string, bool>> scopes;
+    FunctionType current = FunctionType::NONE;
 public:
     Resolver(Interpreter _interpreter) : interpreter(_interpreter){}
 
@@ -31,8 +38,8 @@ public:
     Object visitUnaryExpr(Unary *expr) override;
     Object visitVariableExpr(Variable *expr) override;
 
-private:
     void resolve(std::vector<std::shared_ptr<Stmt>> statements);
+private:
     void resolve(std::shared_ptr<Stmt> statement);
     void resolve(std::shared_ptr<Expr> statement);
     void beginScope();
@@ -40,4 +47,5 @@ private:
     void declare(Token name);
     void define(Token name);
     void resolveLocal(std::shared_ptr<Expr> expr, Token name);
+    void resolveFunction(std::shared_ptr<Function> function, FunctionType type);
 };

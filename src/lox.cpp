@@ -1,6 +1,7 @@
 #include "lox.h"
 #include "interpreter.h"
 #include "parser.h"
+#include "resolver.h"
 #include "scanner.h"
 #include "stmt.h"
 #include <fstream>
@@ -49,6 +50,11 @@ void Lox::run(const std::string& source)
 
     Parser parser = Parser(tokens);
     std::vector<std::shared_ptr<Stmt>> statements = parser.parse();
+
+    if(s_HadError) return;
+
+    Resolver resolver = Resolver(Lox::interpreter);
+    resolver.resolve(statements);
 
     if(s_HadError) return;
 

@@ -185,13 +185,21 @@ Object Interpreter::visitLogicalExpr(Logical *expr)
 
 Object Interpreter::visitVariableExpr(Variable* expr)
 {
-    return env->get(expr->name);
+    return lookUpVariable(expr->name, std::make_shared<Variable>(*expr));
 }
 
 Object Interpreter::visitAssignExpr(Assign *expr)
 {
     Object value = evaluate(expr->value);
-    env->assign(expr->name, value);
+
+    if(locals.find(std::make_shared<Assign>(*expr)) != locals.end())
+    {
+        int distance = locals[std::make_shared<Assign>(*expr)];
+        env->assignAt(distance, expr->name, value);
+    }
+    else {
+        Globals::GetInstance()->get_env()->assign(expr->name, value);
+    }
     return value;
 }
 
@@ -279,6 +287,11 @@ void Interpreter::executeBlock(std::vector<std::shared_ptr<Stmt>> statements, st
     this->env = previous;
 }
 
+void Interpreter::resolve(std::shared_ptr<Expr> expr, int depth)
+{
+    locals[expr] = depth;
+}
+
 void Interpreter::execute(std::shared_ptr<Stmt> statement)
 {
     statement->accept(this);
@@ -330,3 +343,16 @@ std::string Interpreter::stringify(Object object)
 
     return std::get<std::string>(object.literal);
 }
+
+Object Interpreter::lookUpVariable(Token name, std::shared_ptr<Expr> expr)
+{
+    if(locals.find(expr) != locals.end())
+    {
+        int distance = locals[expr];
+        return env->getAt(distance, name.m_Lexeme);
+    }
+    return Globals::GetInstance()->get_env()->get(name);
+}
+
+
+

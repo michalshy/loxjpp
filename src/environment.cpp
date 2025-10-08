@@ -2,6 +2,7 @@
 #include "utils/errors.hpp"
 #include "utils/object.h"
 #include "utils/tokens.hpp"
+#include <memory>
 
 void Environment::define(std::string name, Object value)
 {
@@ -36,4 +37,24 @@ void Environment::assign(Token name, Object value)
     }
 
     throw RuntimeError(name, "Undefined variable '" + name.m_Lexeme + "'.");
+}
+
+Object Environment::getAt(int distance, std::string name)
+{
+    return ancestor(distance)->values[name];
+}
+
+void Environment::assignAt(int distance, Token name, Object value)
+{
+    ancestor(distance)->values[name.m_Lexeme] = value;
+}
+
+Environment* Environment::ancestor(int distance)
+{
+    Environment* env = this;
+    for(int i = 0; i < distance; i++)
+    {
+        env = env->enclosing.get();
+    }
+    return env;
 }

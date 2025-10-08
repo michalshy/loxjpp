@@ -17,4 +17,7 @@ public:
     Object get(Token name);
     void assign(Token name, Object value);
     int size(){ return values.size(); }
+    Object getAt(int distance, std::string name);
+    void assignAt(int distance, Token name, Object value);
+    Environment* ancestor(int distance);
 };
