@@ -81,7 +81,7 @@ void Resolver::visitPrintStmt(Print *stmt) {
 }
 void Resolver::visitReturnStmt(Return *stmt) {
     if (current == FunctionType::NONE) {
-      error(stmt->keyword, "Can't return from top-level code."); //todo test commit
+      error(stmt->keyword, "Can't return from top-level code.");
     }
     if(stmt->value != nullptr)
     {
