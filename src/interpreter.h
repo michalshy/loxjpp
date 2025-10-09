@@ -33,7 +33,7 @@ public:
 class Interpreter : public VisitorExpr, VisitorStmt
 {
     std::shared_ptr<Environment> env;
-    std::unordered_map<std::shared_ptr<Expr>, int> locals;
+    std::unordered_map<Expr*, int> locals;
 public:
     Interpreter();
 
@@ -57,7 +57,7 @@ public:
     void visitVarStmt(Var *stmt) override;
     void visitWhileStmt(While *stmt) override;
     void executeBlock(std::vector<std::shared_ptr<Stmt>> statements, std::shared_ptr<Environment> env);
-    void resolve(std::shared_ptr<Expr> expr, int depth);
+    void resolve(Expr* expr, int depth);
     std::shared_ptr<Environment> get_env() { return env; }
 private:
     void execute(std::shared_ptr<Stmt> statements);
@@ -65,5 +65,5 @@ private:
     bool isTruthy(Object object);
     bool isEqual(Object left, Object right);
     std::string stringify(Object object);
-    Object lookUpVariable(Token name, std::shared_ptr<Expr> expr);
+    Object lookUpVariable(Token name, Expr* expr);
 };

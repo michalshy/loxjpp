@@ -35,7 +35,7 @@ void Resolver::resolve(std::shared_ptr<Expr> statement)
 
 void Resolver::beginScope()
 {
-    scopes.insert(scopes.begin(), std::unordered_map<std::string, bool>());
+    scopes.push_back(std::unordered_map<std::string, bool>());
 }
 
 void Resolver::endScope()
@@ -51,10 +51,10 @@ void Resolver::visitFunctionStmt(Function *stmt) {
     declare(stmt->name);
     define(stmt->name);
 
-    resolveFunction(std::make_shared<Function>(*stmt), FunctionType::FUNCTION);
+    resolveFunction(stmt, FunctionType::FUNCTION);
 }
 
-void Resolver::resolveFunction(std::shared_ptr<Function> function, FunctionType type)
+void Resolver::resolveFunction(Function* function, FunctionType type)
 {
     FunctionType enclosingFunction = current;
     current = type;
@@ -102,17 +102,17 @@ void Resolver::declare(Token name)
 {
     if(scopes.empty()) return;
 
-    if(scopes.front().find(name.m_Lexeme) != scopes.front().end())
+    if(scopes.back().find(name.m_Lexeme) != scopes.back().end())
         error(name, "Already a variable with this name in this scope.");
 
-    scopes.front()[name.m_Lexeme] = false;
+    scopes.back()[name.m_Lexeme] = false;
 }
 
 void Resolver::define(Token name)
 {
     if(scopes.empty()) return;
 
-    scopes.front()[name.m_Lexeme] = true;
+    scopes.back()[name.m_Lexeme] = true;
 }
 
 void Resolver::visitWhileStmt(While *stmt) {
@@ -123,7 +123,7 @@ void Resolver::visitWhileStmt(While *stmt) {
 Object Resolver::visitAssignExpr(Assign *expr) { 
     
     resolve(expr->value);
-    resolveLocal(std::make_shared<Assign>(*expr), expr->name);
+    resolveLocal(expr, expr->name);
 
     return Object(); //TODO: find better way to implement visitor
 }
@@ -163,23 +163,24 @@ Object Resolver::visitUnaryExpr(Unary *expr) {
 }
 
 Object Resolver::visitVariableExpr(Variable *expr) { 
-    if(!scopes.empty() && scopes.front()[expr->name.m_Lexeme] == false)
-    {
+    if (!scopes.empty() && scopes.back().count(expr->name.m_Lexeme) &&
+        !scopes.back()[expr->name.m_Lexeme]) {
         error(expr->name, "Can't read local variable in its own initializer");
     }
 
-    resolveLocal(std::make_shared<Variable>(*expr), expr->name);
+    resolveLocal(expr, expr->name);
 
     return Object(); //TODO: find better way to implement visitor
 }
 
-void Resolver::resolveLocal(std::shared_ptr<Expr> expr, Token name)
+void Resolver::resolveLocal(Expr* expr, Token name)
 {
-    for(int i = scopes.size() - 1;  i >= 0; i--)
+    for(int i = scopes.size() - 1; i >= 0; i--)
     {
         if(scopes[i].find(name.m_Lexeme) != scopes[i].end())
         {
-            interpreter.resolve(expr, scopes.size() - 1 - i);
+            int distance = scopes.size() - 1 - i;
+            interpreter.resolve(expr, distance);
             return;
         }
     }

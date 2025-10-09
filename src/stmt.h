@@ -22,7 +22,7 @@ public:
     virtual void visitVarStmt(Var* stmt) = 0;
     virtual void visitWhileStmt(While* stmt) = 0;
 };
-class Stmt{
+class Stmt {
 public:
     virtual ~Stmt() = default;
     virtual void accept(VisitorStmt* visitor) = 0;

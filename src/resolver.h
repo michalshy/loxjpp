@@ -46,6 +46,6 @@ private:
     void endScope();
     void declare(Token name);
     void define(Token name);
-    void resolveLocal(std::shared_ptr<Expr> expr, Token name);
-    void resolveFunction(std::shared_ptr<Function> function, FunctionType type);
+    void resolveLocal(Expr* expr, Token name);
+    void resolveFunction(Function* function, FunctionType type);
 };
