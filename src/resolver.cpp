@@ -179,9 +179,9 @@ void Resolver::resolveLocal(Expr* expr, Token name)
     {
         if(scopes[i].find(name.m_Lexeme) != scopes[i].end())
         {
-            int distance = scopes.size() - 1 - i;
-            interpreter.resolve(expr, distance);
+            interpreter.resolve(expr, scopes.size() - 1 - i);
             return;
         }
     }
 }
+

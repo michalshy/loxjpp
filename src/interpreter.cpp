@@ -349,10 +349,8 @@ Object Interpreter::lookUpVariable(Token name, Expr* expr)
     if(locals.find(expr) != locals.end())
     {
         int distance = locals[expr];
-        std::cout << "found " << name.m_Lexeme << std::endl;
         return env->getAt(distance, name.m_Lexeme);
     }
-    std::cout << "falling to globals " << name.m_Lexeme << std::endl;
 
     return Globals::GetInstance()->get_env()->get(name);
 }

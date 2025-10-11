@@ -15,11 +15,11 @@ enum class FunctionType
 
 class Resolver : public VisitorExpr, public VisitorStmt
 {
-    Interpreter interpreter;
+    Interpreter& interpreter;
     std::vector<std::unordered_map<std::string, bool>> scopes;
     FunctionType current = FunctionType::NONE;
 public:
-    Resolver(Interpreter _interpreter) : interpreter(_interpreter){}
+    Resolver(Interpreter& _interpreter) : interpreter(_interpreter){}
 
     void visitBlockStmt(Block *stmt) override;
     void visitExpressionStmt(Expression *stmt) override;
