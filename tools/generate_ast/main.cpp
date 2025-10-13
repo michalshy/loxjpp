@@ -118,6 +118,7 @@ int main(int argc, char** argv)
         "Assign : Token name, std::shared_ptr<Expr> value",
         "Binary : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
         "Call : std::shared_ptr<Expr> callee, Token paren, std::vector<std::shared_ptr<Expr>> arguments",
+        "Get : std::shared_ptr<Expr> object, Token name",
         "Grouping : std::shared_ptr<Expr> expression",
         "Literal : Object value",
         "Logical : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
@@ -128,6 +129,7 @@ int main(int argc, char** argv)
 
     define_ast(output, "Stmt", std::vector<std::string>{
         "Block : std::vector<std::shared_ptr<Stmt>> statements",
+        "Class : Token name, std::vector<std::shared_ptr<Stmt>> methods",
         "Expression : std::shared_ptr<Expr> expression",
         "Function : Token name, std::vector<Token> params, std::vector<std::shared_ptr<Stmt>> body",
         "If : std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> thenBranch, std::shared_ptr<Stmt> elseBranch",

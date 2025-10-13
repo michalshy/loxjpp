@@ -3,6 +3,7 @@
 #include "expr.h"
 #include <memory>
 class Block;
+class Class;
 class Expression;
 class Function;
 class If;
@@ -14,6 +15,7 @@ class VisitorStmt
 {
 public:
     virtual void visitBlockStmt(Block* stmt) = 0;
+    virtual void visitClassStmt(Class* stmt) = 0;
     virtual void visitExpressionStmt(Expression* stmt) = 0;
     virtual void visitFunctionStmt(Function* stmt) = 0;
     virtual void visitIfStmt(If* stmt) = 0;
@@ -22,7 +24,7 @@ public:
     virtual void visitVarStmt(Var* stmt) = 0;
     virtual void visitWhileStmt(While* stmt) = 0;
 };
-class Stmt {
+class Stmt{
 public:
     virtual ~Stmt() = default;
     virtual void accept(VisitorStmt* visitor) = 0;
@@ -34,6 +36,16 @@ public:
        statements(statements){}
     void accept(VisitorStmt* visitor) override {
         return visitor->visitBlockStmt(this);
+    };
+};
+class Class : public Stmt {
+public:
+    Token name;
+    std::vector<std::shared_ptr<Stmt>> methods;
+    Class( Token name, std::vector<std::shared_ptr<Stmt>> methods) :
+       name(name),methods(methods){}
+    void accept(VisitorStmt* visitor) override {
+        return visitor->visitClassStmt(this);
     };
 };
 class Expression : public Stmt {

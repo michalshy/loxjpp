@@ -22,6 +22,7 @@ public:
     Resolver(Interpreter& _interpreter) : interpreter(_interpreter){}
 
     void visitBlockStmt(Block *stmt) override;
+    void visitClassStmt(Class *stmt) override;
     void visitExpressionStmt(Expression *stmt) override;
     void visitFunctionStmt(Function *stmt) override;
     void visitIfStmt(If *stmt) override;
@@ -32,6 +33,7 @@ public:
     Object visitAssignExpr(Assign *expr) override;
     Object visitBinaryExpr(Binary *expr) override;
     Object visitCallExpr(Call *expr) override;
+    Object visitGetExpr(Get *expr) override;
     Object visitGroupingExpr(Grouping *expr) override;
     Object visitLiteralExpr(Literal *expr) override;
     Object visitLogicalExpr(Logical *expr) override;

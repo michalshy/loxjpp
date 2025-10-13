@@ -32,6 +32,7 @@ private:
     std::shared_ptr<Stmt> declaration()
     {
         try {
+            if(match(TokenType::CLASS)) return classDeclaration();
             if(match(TokenType::FUN)) return function("function");
             if(match(TokenType::VAR)) return varDeclaration();
             return statement();
@@ -41,6 +42,20 @@ private:
         }
     }
 
+    std::shared_ptr<Stmt> classDeclaration()
+    {
+        Token name = consume(TokenType::IDENTIFIER, "Expect class name.");
+        consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
+
+        std::vector<std::shared_ptr<Stmt>> methods;
+        while(!check(TokenType::RIGHT_BRACE) && isAtEnd())
+        {
+            methods.push_back(function("method"));
+        }
+
+        consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
+        return std::make_shared<Class>(name, methods);
+    }
 
     std::shared_ptr<Stmt> function(std::string kind)
     {

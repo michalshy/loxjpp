@@ -4,6 +4,7 @@
 class Assign;
 class Binary;
 class Call;
+class Get;
 class Grouping;
 class Literal;
 class Logical;
@@ -15,6 +16,7 @@ public:
     virtual Object visitAssignExpr(Assign* expr) = 0;
     virtual Object visitBinaryExpr(Binary* expr) = 0;
     virtual Object visitCallExpr(Call* expr) = 0;
+    virtual Object visitGetExpr(Get* expr) = 0;
     virtual Object visitGroupingExpr(Grouping* expr) = 0;
     virtual Object visitLiteralExpr(Literal* expr) = 0;
     virtual Object visitLogicalExpr(Logical* expr) = 0;
@@ -56,6 +58,16 @@ public:
        callee(callee),paren(paren),arguments(arguments){}
     Object accept(VisitorExpr* visitor) override {
         return visitor->visitCallExpr(this);
+    };
+};
+class Get : public Expr {
+public:
+    std::shared_ptr<Expr> object;
+    Token name;
+    Get( std::shared_ptr<Expr> object, Token name) :
+       object(object),name(name){}
+    Object accept(VisitorExpr* visitor) override {
+        return visitor->visitGetExpr(this);
     };
 };
 class Grouping : public Expr {

@@ -15,7 +15,8 @@
 #include "utils/errors.hpp"
 #include "lox_callable.h"
 #include <functional>
-
+#include "lox_class.h"
+#include "lox_instance.h"
 Globals* Globals::_globals = nullptr;
 
 class NativeCallable : public LoxCallable {
@@ -160,6 +161,11 @@ Object Interpreter::visitCallExpr(Call* expr)
     }
 }
 
+Object Interpreter::visitGetExpr(Get *expr)
+{
+    
+}
+
 Object Interpreter::visitGroupingExpr(Grouping *expr) 
 {
     return evaluate(expr->expression);
@@ -206,6 +212,13 @@ Object Interpreter::visitAssignExpr(Assign *expr)
 void Interpreter::visitBlockStmt(Block* stmt)
 {
     executeBlock(stmt->statements, std::make_shared<Environment>(env));
+}
+
+void Interpreter::visitClassStmt(Class* stmt)
+{
+    env->define(stmt->name.m_Lexeme, Object());
+    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name.m_Lexeme);
+    env->assign(stmt->name, Object(klass));
 }
 
 void Interpreter::visitPrintStmt(Print* stmt)
@@ -339,6 +352,16 @@ std::string Interpreter::stringify(Object object)
     if (std::holds_alternative<bool>(object.literal))
     {
         return std::get<bool>(object.literal) ? "true" : "false";
+    }
+
+    if(std::holds_alternative<std::shared_ptr<LoxInstance>>(object.literal))
+    {
+        return std::get<std::shared_ptr<LoxInstance>>(object.literal)->to_string();
+    }
+
+    if(std::holds_alternative<std::shared_ptr<LoxCallable>>(object.literal))
+    {
+        return std::get<std::shared_ptr<LoxCallable>>(object.literal)->to_string();
     }
 
     return std::get<std::string>(object.literal);

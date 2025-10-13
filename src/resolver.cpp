@@ -13,6 +13,12 @@ void Resolver::visitBlockStmt(Block *stmt) {
     endScope();
 }
 
+void Resolver::visitClassStmt(Class* stmt)
+{
+    declare(stmt->name);
+    define(stmt->name);
+}
+
 void Resolver::resolve(std::vector<std::shared_ptr<Stmt>> statements)
 {
     for(const auto& statement : statements)
@@ -140,6 +146,11 @@ Object Resolver::visitCallExpr(Call *expr) {
         resolve(param);
     }
     return Object(); 
+}
+
+Object Resolver::visitGetExpr(Get *expr)
+{
+    
 }
 
 Object Resolver::visitGroupingExpr(Grouping *expr) { 

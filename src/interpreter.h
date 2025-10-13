@@ -42,6 +42,7 @@ public:
     Object visitUnaryExpr(Unary* expr) override;
     Object visitBinaryExpr(Binary* expr) override;
     Object visitCallExpr(Call* expr) override;
+    Object visitGetExpr(Get *expr) override;
     Object visitGroupingExpr(Grouping* expr) override;
     Object visitLiteralExpr(Literal* expr) override;
     Object visitLogicalExpr(Logical *expr) override;
@@ -49,6 +50,7 @@ public:
     Object visitAssignExpr(Assign *expr) override;
     
     void visitBlockStmt(Block *stmt) override;
+    void visitClassStmt(Class *stmt) override;
     void visitPrintStmt(Print* stmt) override;
     void visitIfStmt(If *stmt) override;
     void visitExpressionStmt(Expression* stmt) override;
