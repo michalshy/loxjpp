@@ -150,7 +150,8 @@ Object Resolver::visitCallExpr(Call *expr) {
 
 Object Resolver::visitGetExpr(Get *expr)
 {
-    
+    resolve(expr->object);
+    return Object();
 }
 
 Object Resolver::visitGroupingExpr(Grouping *expr) { 
@@ -167,6 +168,12 @@ Object Resolver::visitLogicalExpr(Logical *expr) {
     resolve(expr->right);
     return Object(); 
 }
+
+Object Resolver::visitSetExpr(Set *expr)
+{
+    
+}
+
 
 Object Resolver::visitUnaryExpr(Unary *expr) { 
     resolve(expr->right);

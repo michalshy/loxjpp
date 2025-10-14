@@ -163,7 +163,14 @@ Object Interpreter::visitCallExpr(Call* expr)
 
 Object Interpreter::visitGetExpr(Get *expr)
 {
-    
+    Object object = evaluate(expr->object);
+    try {
+        std::shared_ptr<LoxInstance> instance = std::get<std::shared_ptr<LoxInstance>>(object.literal);
+
+        return instance->get(expr->name);
+    } catch (const std::bad_variant_access&) {
+        throw RuntimeError(expr->name, "Only instances can have properties.");
+    }
 }
 
 Object Interpreter::visitGroupingExpr(Grouping *expr) 
@@ -188,6 +195,12 @@ Object Interpreter::visitLogicalExpr(Logical *expr)
 
     return evaluate(expr->right);
 }
+
+Object Interpreter::visitSetExpr(Set *expr)
+{
+    
+}
+
 
 Object Interpreter::visitVariableExpr(Variable* expr)
 {

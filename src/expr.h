@@ -8,6 +8,7 @@ class Get;
 class Grouping;
 class Literal;
 class Logical;
+class Set;
 class Unary;
 class Variable;
 class VisitorExpr
@@ -20,6 +21,7 @@ public:
     virtual Object visitGroupingExpr(Grouping* expr) = 0;
     virtual Object visitLiteralExpr(Literal* expr) = 0;
     virtual Object visitLogicalExpr(Logical* expr) = 0;
+    virtual Object visitSetExpr(Set* expr) = 0;
     virtual Object visitUnaryExpr(Unary* expr) = 0;
     virtual Object visitVariableExpr(Variable* expr) = 0;
 };
@@ -97,6 +99,17 @@ public:
        left(left),op(op),right(right){}
     Object accept(VisitorExpr* visitor) override {
         return visitor->visitLogicalExpr(this);
+    };
+};
+class Set : public Expr {
+public:
+    std::shared_ptr<Expr> object;
+    Token name;
+    std::shared_ptr<Expr> value;
+    Set( std::shared_ptr<Expr> object, Token name, std::shared_ptr<Expr> value) :
+       object(object),name(name),value(value){}
+    Object accept(VisitorExpr* visitor) override {
+        return visitor->visitSetExpr(this);
     };
 };
 class Unary : public Expr {

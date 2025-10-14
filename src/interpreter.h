@@ -46,6 +46,7 @@ public:
     Object visitGroupingExpr(Grouping* expr) override;
     Object visitLiteralExpr(Literal* expr) override;
     Object visitLogicalExpr(Logical *expr) override;
+    Object visitSetExpr(Set *expr) override;
     Object visitVariableExpr(Variable *expr) override;
     Object visitAssignExpr(Assign *expr) override;
     

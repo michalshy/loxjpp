@@ -388,6 +388,11 @@ private:
             {
                 expr = finishCall(expr);
             }
+            else if(match(TokenType::DOT))
+            {
+                Token name = consume(TokenType::IDENTIFIER, "Expect property name after '.'.");
+                expr = std::make_shared<Get>(expr, name);
+            }
             else 
             {
                 break;
