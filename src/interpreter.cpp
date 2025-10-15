@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <sys/types.h>
+#include <unordered_map>
 #include <variant>
 #include <iostream>
 #include <vector>
@@ -166,7 +167,6 @@ Object Interpreter::visitGetExpr(Get *expr)
     Object object = evaluate(expr->object);
     try {
         std::shared_ptr<LoxInstance> instance = std::get<std::shared_ptr<LoxInstance>>(object.literal);
-
         return instance->get(expr->name);
     } catch (const std::bad_variant_access&) {
         throw RuntimeError(expr->name, "Only instances can have properties.");
@@ -198,7 +198,16 @@ Object Interpreter::visitLogicalExpr(Logical *expr)
 
 Object Interpreter::visitSetExpr(Set *expr)
 {
-    
+    Object object = evaluate(expr->object);
+    try {
+        std::shared_ptr<LoxInstance> instance = std::get<std::shared_ptr<LoxInstance>>(object.literal);
+
+        Object value = evaluate(expr->value);
+        instance->set(expr->name, value);
+    } catch (const std::bad_variant_access&) {
+        throw RuntimeError(expr->name, "Only instances can have properties.");
+    }
+    return Object();
 }
 
 
@@ -230,7 +239,15 @@ void Interpreter::visitBlockStmt(Block* stmt)
 void Interpreter::visitClassStmt(Class* stmt)
 {
     env->define(stmt->name.m_Lexeme, Object());
-    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name.m_Lexeme);
+
+    std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods;
+    for(auto& method : stmt->methods)
+    {
+        std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method, env);
+        methods[method->name.m_Lexeme] = function;
+    } 
+
+    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name.m_Lexeme, methods);
     env->assign(stmt->name, Object(klass));
 }
 

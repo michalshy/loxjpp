@@ -17,6 +17,12 @@ void Resolver::visitClassStmt(Class* stmt)
 {
     declare(stmt->name);
     define(stmt->name);
+
+    for(auto& method: stmt->methods)
+    {
+        FunctionType declaration = FunctionType::METHOD;
+        resolveFunction(method.get(), declaration);
+    }
 }
 
 void Resolver::resolve(std::vector<std::shared_ptr<Stmt>> statements)
@@ -171,7 +177,9 @@ Object Resolver::visitLogicalExpr(Logical *expr) {
 
 Object Resolver::visitSetExpr(Set *expr)
 {
-    
+    resolve(expr->value);
+    resolve(expr->object);
+    return Object();
 }
 
 

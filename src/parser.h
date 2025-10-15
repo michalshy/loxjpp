@@ -47,8 +47,8 @@ private:
         Token name = consume(TokenType::IDENTIFIER, "Expect class name.");
         consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
 
-        std::vector<std::shared_ptr<Stmt>> methods;
-        while(!check(TokenType::RIGHT_BRACE) && isAtEnd())
+        std::vector<std::shared_ptr<Function>> methods;
+        while(!check(TokenType::RIGHT_BRACE) && !isAtEnd())
         {
             methods.push_back(function("method"));
         }
@@ -57,7 +57,7 @@ private:
         return std::make_shared<Class>(name, methods);
     }
 
-    std::shared_ptr<Stmt> function(std::string kind)
+    std::shared_ptr<Function> function(std::string kind)
     {
         Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name.");
         consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
@@ -277,8 +277,16 @@ private:
                 return std::make_shared<Assign>(name, value);
             }
 
+            Get* get_expr = dynamic_cast<Get*>(expr.get());
+            if(get_expr)
+            {
+                std::shared_ptr<Get> get = std::make_shared<Get>(get_expr->object, get_expr->name);
+                return std::make_shared<Set>(get->object, get->name, value);
+            }
+
             error(equals, "Invalid assignment target.");
         }
+        
         return expr;
     }
 

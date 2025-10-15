@@ -4,11 +4,20 @@
 
 Object LoxClass::call(Interpreter *interpreter, const std::vector<Object> &arguments)
 {
-    std::shared_ptr<LoxInstance> instance = std::make_shared<LoxInstance>(this);
-    return Object(instance);
+    LoxInstance instance(this);
+    return Object(std::make_shared<LoxInstance>(instance));
 }
 
 int LoxClass::arity()
 {
     return 0;
+}
+
+std::shared_ptr<LoxFunction> LoxClass::findMethod(std::string name)
+{
+    if(methods.find(name) != methods.end())
+    {
+        return methods[name];
+    }
+    return nullptr;
 }
