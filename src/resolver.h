@@ -11,7 +11,14 @@ enum class FunctionType
 {
     NONE,
     FUNCTION,
+    INITIALIZER,
     METHOD
+};
+
+enum class ClassType
+{
+    NONE,
+    CLASS
 };
 
 class Resolver : public VisitorExpr, public VisitorStmt
@@ -19,6 +26,7 @@ class Resolver : public VisitorExpr, public VisitorStmt
     Interpreter& interpreter;
     std::vector<std::unordered_map<std::string, bool>> scopes;
     FunctionType current = FunctionType::NONE;
+    ClassType currentClass = ClassType::NONE;
 public:
     Resolver(Interpreter& _interpreter) : interpreter(_interpreter){}
 
@@ -39,6 +47,7 @@ public:
     Object visitLiteralExpr(Literal *expr) override;
     Object visitLogicalExpr(Logical *expr) override;
     Object visitSetExpr(Set *expr) override;
+    Object visitThisExpr(This *expr) override;
     Object visitUnaryExpr(Unary *expr) override;
     Object visitVariableExpr(Variable *expr) override;
 

@@ -9,6 +9,7 @@ class Grouping;
 class Literal;
 class Logical;
 class Set;
+class This;
 class Unary;
 class Variable;
 class VisitorExpr
@@ -22,6 +23,7 @@ public:
     virtual Object visitLiteralExpr(Literal* expr) = 0;
     virtual Object visitLogicalExpr(Logical* expr) = 0;
     virtual Object visitSetExpr(Set* expr) = 0;
+    virtual Object visitThisExpr(This* expr) = 0;
     virtual Object visitUnaryExpr(Unary* expr) = 0;
     virtual Object visitVariableExpr(Variable* expr) = 0;
 };
@@ -110,6 +112,15 @@ public:
        object(object),name(name),value(value){}
     Object accept(VisitorExpr* visitor) override {
         return visitor->visitSetExpr(this);
+    };
+};
+class This : public Expr {
+public:
+    Token keyword;
+    This( Token keyword) :
+       keyword(keyword){}
+    Object accept(VisitorExpr* visitor) override {
+        return visitor->visitThisExpr(this);
     };
 };
 class Unary : public Expr {

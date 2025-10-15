@@ -15,14 +15,25 @@ void Resolver::visitBlockStmt(Block *stmt) {
 
 void Resolver::visitClassStmt(Class* stmt)
 {
+    ClassType enclosingClass = currentClass;
+    currentClass = ClassType::CLASS;
+
     declare(stmt->name);
     define(stmt->name);
+
+    beginScope();
+    scopes.back()["this"] = true;
 
     for(auto& method: stmt->methods)
     {
         FunctionType declaration = FunctionType::METHOD;
+        if(method->name.m_Lexeme == "init")
+            declaration = FunctionType::INITIALIZER;
         resolveFunction(method.get(), declaration);
     }
+
+    currentClass = enclosingClass;
+    endScope();
 }
 
 void Resolver::resolve(std::vector<std::shared_ptr<Stmt>> statements)
@@ -97,6 +108,11 @@ void Resolver::visitReturnStmt(Return *stmt) {
     }
     if(stmt->value != nullptr)
     {
+        if(current == FunctionType::INITIALIZER)
+        {
+            error(stmt->keyword, "Can't return value from initializer.");
+        }
+
         resolve(stmt->value);
     }
 }
@@ -182,6 +198,16 @@ Object Resolver::visitSetExpr(Set *expr)
     return Object();
 }
 
+Object Resolver::visitThisExpr(This* expr)
+{
+    if(currentClass == ClassType::NONE)
+    {
+        error(expr->keyword, "Can't use this outside of class.");
+    }
+
+    resolveLocal(expr, expr->keyword);
+    return Object();
+}
 
 Object Resolver::visitUnaryExpr(Unary *expr) { 
     resolve(expr->right);

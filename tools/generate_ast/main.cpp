@@ -123,6 +123,7 @@ int main(int argc, char** argv)
         "Literal : Object value",
         "Logical : std::shared_ptr<Expr> left, Token op, std::shared_ptr<Expr> right",
         "Set : std::shared_ptr<Expr> object, Token name, std::shared_ptr<Expr> value",
+        "This : Token keyword",
         "Unary : Token op, std::shared_ptr<Expr> right",
         "Variable : Token name"
 

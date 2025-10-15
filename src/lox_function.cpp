@@ -4,6 +4,7 @@
 #include "utils/errors.hpp"
 #include "utils/object.h"
 #include <memory>
+#include "lox_instance.h"
 
 Object LoxFunction::call(Interpreter* interpreter, const std::vector<Object>& arguments)
 {
@@ -16,8 +17,12 @@ Object LoxFunction::call(Interpreter* interpreter, const std::vector<Object>& ar
     try {
         interpreter->executeBlock(declaration->body, environment);
     } catch (ReturnVal returnVal) {
+        if(isInitializer) return closure->getAt(0, "this");
+
         return returnVal.get();
     }
+
+    if(isInitializer) return closure->getAt(0, "this");
     return Object();
 }
 
@@ -29,4 +34,11 @@ int LoxFunction::arity()
 std::string LoxFunction::to_string()
 {
     return "<fn " + declaration->name.m_Lexeme + ">";
+}
+
+std::shared_ptr<LoxFunction> LoxFunction::bind(LoxInstance* instance)
+{
+    std::shared_ptr<Environment> new_env = std::make_shared<Environment>(closure);
+    new_env->define("this", Object(std::make_shared<LoxInstance>(*instance)));
+    return std::make_shared<LoxFunction>(declaration, new_env, isInitializer);
 }

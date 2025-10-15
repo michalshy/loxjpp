@@ -9,7 +9,7 @@ class LoxInstance;
 class Object
 {
 public:
-    std::variant<std::monostate, std::string, double, bool, std::shared_ptr<LoxCallable>, std::shared_ptr<LoxInstance>> literal;
+    std::variant<std::monostate, std::string, double, bool, std::shared_ptr<LoxCallable>, std::shared_ptr<LoxInstance>, LoxInstance*> literal;
     Object() : literal(std::monostate{}) {}
     Object(double d) : literal(d) {}
     Object(const std::string& s) : literal(s) {}

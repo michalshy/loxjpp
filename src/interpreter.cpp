@@ -210,6 +210,10 @@ Object Interpreter::visitSetExpr(Set *expr)
     return Object();
 }
 
+Object Interpreter::visitThisExpr(This* expr)
+{
+    return lookUpVariable(expr->keyword, expr);
+}
 
 Object Interpreter::visitVariableExpr(Variable* expr)
 {
@@ -243,7 +247,7 @@ void Interpreter::visitClassStmt(Class* stmt)
     std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods;
     for(auto& method : stmt->methods)
     {
-        std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method, env);
+        std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method, env, method->name.m_Lexeme == "init");
         methods[method->name.m_Lexeme] = function;
     } 
 
@@ -276,7 +280,7 @@ void Interpreter::visitExpressionStmt(Expression* stmt)
 
 void Interpreter::visitFunctionStmt(Function* stmt)
 {
-    LoxFunction function = LoxFunction(std::make_shared<Function>(*stmt), env);
+    LoxFunction function = LoxFunction(std::make_shared<Function>(*stmt), env, false);
     env->define(stmt->name.m_Lexeme, Object(std::make_shared<LoxFunction>(function)));
 }
 
