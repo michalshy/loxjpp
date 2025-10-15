@@ -41,9 +41,10 @@ public:
 class Class : public Stmt {
 public:
     Token name;
+    std::shared_ptr<Variable> superclass;
     std::vector<std::shared_ptr<Function>> methods;
-    Class( Token name, std::vector<std::shared_ptr<Function>> methods) :
-       name(name),methods(methods){}
+    Class( Token name, std::shared_ptr<Variable> superclass, std::vector<std::shared_ptr<Function>> methods) :
+       name(name),superclass(superclass),methods(methods){}
     void accept(VisitorStmt* visitor) override {
         return visitor->visitClassStmt(this);
     };

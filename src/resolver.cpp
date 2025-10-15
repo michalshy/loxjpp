@@ -21,6 +21,16 @@ void Resolver::visitClassStmt(Class* stmt)
     declare(stmt->name);
     define(stmt->name);
 
+    if(stmt->superclass != nullptr && stmt->name.m_Lexeme == stmt->superclass->name.m_Lexeme)
+    {
+        error(stmt->superclass->name, "A class can't inherit from itself");
+    }
+
+    if(stmt->superclass != nullptr)
+    {
+        resolve(stmt->superclass);
+    }
+
     beginScope();
     scopes.back()["this"] = true;
 

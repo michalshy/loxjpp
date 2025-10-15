@@ -131,7 +131,7 @@ int main(int argc, char** argv)
 
     define_ast(output, "Stmt", std::vector<std::string>{
         "Block : std::vector<std::shared_ptr<Stmt>> statements",
-        "Class : Token name, std::vector<std::shared_ptr<Function>> methods",
+        "Class : Token name, std::shared_ptr<Variable> superclass, std::vector<std::shared_ptr<Function>> methods",
         "Expression : std::shared_ptr<Expr> expression",
         "Function : Token name, std::vector<Token> params, std::vector<std::shared_ptr<Stmt>> body",
         "If : std::shared_ptr<Expr> condition, std::shared_ptr<Stmt> thenBranch, std::shared_ptr<Stmt> elseBranch",

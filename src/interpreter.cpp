@@ -242,6 +242,17 @@ void Interpreter::visitBlockStmt(Block* stmt)
 
 void Interpreter::visitClassStmt(Class* stmt)
 {
+    Object superclass = Object();
+    if(stmt->superclass != nullptr)
+    {
+        superclass = evaluate(stmt->superclass);
+        try {
+            std::get<std::shared_ptr<LoxClass>>(superclass.literal);
+        } catch (const std::bad_variant_access&) {
+            throw RuntimeError(stmt->superclass->name, "Superclass must be a class.");
+        }
+    }
+
     env->define(stmt->name.m_Lexeme, Object());
 
     std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods;
@@ -251,7 +262,7 @@ void Interpreter::visitClassStmt(Class* stmt)
         methods[method->name.m_Lexeme] = function;
     } 
 
-    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name.m_Lexeme, methods);
+    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name.m_Lexeme, superclass, methods);
     env->assign(stmt->name, Object(klass));
 }
 

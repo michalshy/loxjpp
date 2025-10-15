@@ -53,8 +53,15 @@ private:
             methods.push_back(function("method"));
         }
 
+        std::shared_ptr<Variable> superclass = nullptr;
+        if(match(TokenType::LESS))
+        {
+            consume(TokenType::IDENTIFIER, "Expect superclass name.");
+            superclass = std::make_shared<Variable>(previous());
+        }
+
         consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
-        return std::make_shared<Class>(name, methods);
+        return std::make_shared<Class>(name, superclass, methods);
     }
 
     std::shared_ptr<Function> function(std::string kind)
