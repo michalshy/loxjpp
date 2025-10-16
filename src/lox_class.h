@@ -20,7 +20,8 @@ public:
         {
             superclass = std::get<std::shared_ptr<LoxClass>>(_superclass.literal);
         }
-        else {
+        else 
+        {
             superclass = nullptr;
         }
     }

@@ -28,7 +28,14 @@ void Resolver::visitClassStmt(Class* stmt)
 
     if(stmt->superclass != nullptr)
     {
+        currentClass = ClassType::SUBCLASS;
         resolve(stmt->superclass);
+    }
+
+    if(stmt->superclass != nullptr)
+    {
+        beginScope();
+        scopes.back()["super"] = true;
     }
 
     beginScope();
@@ -42,8 +49,11 @@ void Resolver::visitClassStmt(Class* stmt)
         resolveFunction(method.get(), declaration);
     }
 
-    currentClass = enclosingClass;
     endScope();
+    
+    if(stmt->superclass != nullptr) endScope();
+    
+    currentClass = enclosingClass;
 }
 
 void Resolver::resolve(std::vector<std::shared_ptr<Stmt>> statements)
@@ -205,6 +215,20 @@ Object Resolver::visitSetExpr(Set *expr)
 {
     resolve(expr->value);
     resolve(expr->object);
+    return Object();
+}
+
+Object Resolver::visitSuperExpr(Super *expr)
+{
+    if (currentClass == ClassType::NONE) {
+      error(expr->keyword,
+          "Can't use 'super' outside of a class.");
+    } else if (currentClass != ClassType::SUBCLASS) {
+      error(expr->keyword,
+          "Can't use 'super' in a class with no superclass.");
+    }
+
+    resolveLocal(expr, expr->keyword);
     return Object();
 }
 

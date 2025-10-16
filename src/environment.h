@@ -19,5 +19,6 @@ public:
     int size(){ return values.size(); }
     Object getAt(int distance, std::string name);
     void assignAt(int distance, Token name, Object value);
+    std::shared_ptr<Environment> get_enclosing() { return enclosing; }
     Environment* ancestor(int distance);
 };

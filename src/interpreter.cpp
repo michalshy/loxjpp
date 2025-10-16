@@ -148,18 +148,24 @@ Object Interpreter::visitCallExpr(Call* expr)
         arguments.push_back(evaluate(argument));
     }
 
-    try {
-        std::shared_ptr<LoxCallable> function = std::get<std::shared_ptr<LoxCallable>>(callee.literal);
+    void* function = nullptr;
 
-        if(arguments.size() != function->arity())
-        {
-            throw RuntimeError(expr->paren, "Expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
-        }
-
-        return function->call(this, arguments);
-    } catch (const std::bad_variant_access&) {
-        throw RuntimeError(expr->paren, "Can only call functions and classes.");
+    if(std::holds_alternative<std::shared_ptr<LoxCallable>>(callee.literal))
+        function = std::get<std::shared_ptr<LoxCallable>>(callee.literal).get();
+    else if(std::holds_alternative<std::shared_ptr<LoxClass>>(callee.literal))
+    {
+        function = std::get<std::shared_ptr<LoxClass>>(callee.literal).get(); 
     }
+
+    if(!function)
+        throw RuntimeError(expr->paren, "Can only call functions and classes.");
+
+    if(arguments.size() != reinterpret_cast<LoxCallable*>(function)->arity())
+    {
+        throw RuntimeError(expr->paren, "Expected " + std::to_string(reinterpret_cast<LoxCallable*>(function)->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
+    }
+
+    return reinterpret_cast<LoxCallable*>(function)->call(this, arguments);
 }
 
 Object Interpreter::visitGetExpr(Get *expr)
@@ -210,6 +216,27 @@ Object Interpreter::visitSetExpr(Set *expr)
     return Object();
 }
 
+Object Interpreter::visitSuperExpr(Super *expr)
+{
+    int distance = locals[expr];
+    Object superclass = env->getAt(distance, "super");
+    Object object = env->getAt(distance - 1, "this");
+    std::shared_ptr<LoxFunction> method = std::get<std::shared_ptr<LoxClass>>(superclass.literal)->findMethod(expr->method.m_Lexeme);
+
+    if(std::holds_alternative<LoxInstance*>(object.literal))
+    {
+        return Object(method->bind(std::get<LoxInstance*>(object.literal)));
+    }
+
+    if (method == nullptr) {
+      throw RuntimeError(expr->method,
+          "Undefined property '" + expr->method.m_Lexeme + "'.");
+    }
+
+    return Object(method->bind(std::get<std::shared_ptr<LoxInstance>>(object.literal).get()));
+}
+
+
 Object Interpreter::visitThisExpr(This* expr)
 {
     return lookUpVariable(expr->keyword, expr);
@@ -252,8 +279,13 @@ void Interpreter::visitClassStmt(Class* stmt)
             throw RuntimeError(stmt->superclass->name, "Superclass must be a class.");
         }
     }
-
     env->define(stmt->name.m_Lexeme, Object());
+
+    if(stmt->superclass != nullptr)
+    {
+        env = std::make_shared<Environment>(env);
+        env->define("super", superclass);
+    }
 
     std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods;
     for(auto& method : stmt->methods)
@@ -263,6 +295,12 @@ void Interpreter::visitClassStmt(Class* stmt)
     } 
 
     std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name.m_Lexeme, superclass, methods);
+    
+    if(!std::holds_alternative<std::monostate>(superclass.literal))
+    {
+        env = env->get_enclosing();
+    }
+    
     env->assign(stmt->name, Object(klass));
 }
 

@@ -9,6 +9,7 @@ class Grouping;
 class Literal;
 class Logical;
 class Set;
+class Super;
 class This;
 class Unary;
 class Variable;
@@ -23,6 +24,7 @@ public:
     virtual Object visitLiteralExpr(Literal* expr) = 0;
     virtual Object visitLogicalExpr(Logical* expr) = 0;
     virtual Object visitSetExpr(Set* expr) = 0;
+    virtual Object visitSuperExpr(Super* expr) = 0;
     virtual Object visitThisExpr(This* expr) = 0;
     virtual Object visitUnaryExpr(Unary* expr) = 0;
     virtual Object visitVariableExpr(Variable* expr) = 0;
@@ -112,6 +114,16 @@ public:
        object(object),name(name),value(value){}
     Object accept(VisitorExpr* visitor) override {
         return visitor->visitSetExpr(this);
+    };
+};
+class Super : public Expr {
+public:
+    Token keyword;
+    Token method;
+    Super( Token keyword, Token method) :
+       keyword(keyword),method(method){}
+    Object accept(VisitorExpr* visitor) override {
+        return visitor->visitSuperExpr(this);
     };
 };
 class This : public Expr {

@@ -28,5 +28,9 @@ std::shared_ptr<LoxFunction> LoxClass::findMethod(std::string name)
     {
         return methods[name];
     }
+    if(superclass != nullptr)
+    {
+        return superclass->findMethod(name);
+    }
     return nullptr;
 }

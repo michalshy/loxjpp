@@ -45,19 +45,20 @@ private:
     std::shared_ptr<Stmt> classDeclaration()
     {
         Token name = consume(TokenType::IDENTIFIER, "Expect class name.");
-        consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
-
-        std::vector<std::shared_ptr<Function>> methods;
-        while(!check(TokenType::RIGHT_BRACE) && !isAtEnd())
-        {
-            methods.push_back(function("method"));
-        }
 
         std::shared_ptr<Variable> superclass = nullptr;
         if(match(TokenType::LESS))
         {
             consume(TokenType::IDENTIFIER, "Expect superclass name.");
             superclass = std::make_shared<Variable>(previous());
+        }
+
+        consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
+
+        std::vector<std::shared_ptr<Function>> methods;
+        while(!check(TokenType::RIGHT_BRACE) && !isAtEnd())
+        {
+            methods.push_back(function("method"));
         }
 
         consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
@@ -463,7 +464,13 @@ private:
                 return std::make_shared<Literal>(Object());
             }
         }
-
+        if(match(TokenType::SUPER)) 
+        {
+            Token keyword = previous();
+            consume(TokenType::DOT, "Expect '.' after super.");
+            Token method = consume(TokenType::IDENTIFIER, "Expect superclass method name.");\
+            return std::make_shared<Super>(keyword, method);
+        }
         if(match(TokenType::THIS)) return std::make_shared<This>(previous());
         if(match(TokenType::IDENTIFIER))
         {

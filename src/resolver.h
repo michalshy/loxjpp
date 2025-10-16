@@ -18,7 +18,8 @@ enum class FunctionType
 enum class ClassType
 {
     NONE,
-    CLASS
+    CLASS,
+    SUBCLASS
 };
 
 class Resolver : public VisitorExpr, public VisitorStmt
@@ -47,6 +48,7 @@ public:
     Object visitLiteralExpr(Literal *expr) override;
     Object visitLogicalExpr(Logical *expr) override;
     Object visitSetExpr(Set *expr) override;
+    Object visitSuperExpr(Super *expr) override;
     Object visitThisExpr(This *expr) override;
     Object visitUnaryExpr(Unary *expr) override;
     Object visitVariableExpr(Variable *expr) override;
